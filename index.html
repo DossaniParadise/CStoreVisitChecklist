@@ -25,6 +25,8 @@
             --input-border: #cccccc;
             --checkbox-bg: #ffffff;
             --shadow: rgba(0, 0, 0, 0.1);
+            --category-alt-1: #d9d9d9;
+            --category-alt-2: #efefef;
         }
 
         [data-theme="dark"] {
@@ -41,6 +43,8 @@
             --input-border: #404040;
             --checkbox-bg: #2d2d2d;
             --shadow: rgba(0, 0, 0, 0.3);
+            --category-alt-1: #3a3a3a;
+            --category-alt-2: #2a2a2a;
         }
 
         body {
@@ -169,6 +173,7 @@
             gap: 10px;
             margin-bottom: 20px;
             justify-content: flex-end;
+            flex-wrap: wrap;
         }
 
         .save-btn {
@@ -231,12 +236,19 @@
         }
 
         tbody tr.category-row {
-            background-color: var(--category-bg);
             font-weight: bold;
         }
 
+        tbody tr.category-row.category-alt-1 {
+            background-color: var(--category-alt-1);
+        }
+
+        tbody tr.category-row.category-alt-2 {
+            background-color: var(--category-alt-2);
+        }
+
         tbody tr.category-row:hover {
-            background-color: var(--category-bg);
+            filter: brightness(0.98);
         }
 
         td {
@@ -360,6 +372,71 @@
             font-size: 12px;
         }
 
+        .comment-btn {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid var(--input-border);
+            border-radius: 4px;
+            background: var(--input-bg);
+            color: var(--text-secondary);
+            text-align: left;
+            cursor: pointer;
+            min-height: 36px;
+        }
+
+        .comment-btn.has-content {
+            color: var(--text-primary);
+            font-weight: 500;
+        }
+
+        .comment-print {
+            display: none;
+            white-space: pre-wrap;
+            word-break: break-word;
+        }
+
+        .modal-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.6);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 3000;
+            padding: 16px;
+        }
+
+        .modal-overlay.open { display: flex; }
+
+        .modal-card {
+            width: min(700px, 100%);
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            border-radius: 8px;
+            padding: 16px;
+        }
+
+        .modal-card textarea {
+            min-height: 200px;
+            font-size: 15px;
+            margin-top: 10px;
+        }
+
+        .modal-actions {
+            display: flex;
+            justify-content: flex-end;
+            gap: 8px;
+            margin-top: 10px;
+        }
+
+        @media print {
+            .controls, .sheet-tabs, .same-above-btn, .comment-btn, .modal-overlay {
+                display: none !important;
+            }
+            .sticky-header { position: static; }
+            .comment-print { display: block; min-height: 40px; }
+        }
+
         @media (max-width: 768px) {
             .container {
                 padding: 10px;
@@ -412,6 +489,10 @@
                     <label for="siteInput">Site</label>
                     <input type="text" id="siteInput" placeholder="Enter site">
                 </div>
+                <div class="input-group">
+                    <label for="managerOnDutyInput">Manager on Duty</label>
+                    <input type="text" id="managerOnDutyInput" placeholder="Enter manager on duty name">
+                </div>
             </div>
         </div>
 
@@ -421,8 +502,9 @@
         </div>
 
         <div class="save-buttons">
-            <button class="save-btn" id="savePdfBtn">📄 Save as PDF</button>
+            <button class="save-btn" id="savePdfBtnTop">📄 Save as PDF (Send to Ops Team + Store Manager)</button>
             <button class="save-btn" id="saveExcelBtn">📊 Save as Excel</button>
+            <button class="save-btn" id="clearFormBtnTop">🧹 Clear Form</button>
         </div>
 
         <div class="checklist-container">
@@ -772,7 +854,7 @@
                         </tr>
                         <tr>
                             <td></td>
-                            <td class="task-cell">Preventatie Maintenance Checklists Completed</td>
+                            <td class="task-cell">Preventative Maintenance Checklists Completed</td>
                             <td><div class="checkbox-group"><input type="radio" name="response_ff_5" value="yes" class="checkbox-yes"></div></td>
                             <td><div class="checkbox-group"><input type="radio" name="response_ff_5" value="no" class="checkbox-no"></div></td>
                             <td><div class="checkbox-group"><input type="radio" name="response_ff_5" value="pending" class="checkbox-pending"></div></td>
@@ -1044,6 +1126,22 @@
                 </table>
             </div>
         </div>
+
+        <div class="save-buttons">
+            <button class="save-btn" id="savePdfBtnBottom">📄 Save as PDF (Send to Ops Team + Store Manager)</button>
+            <button class="save-btn" id="clearFormBtnBottom">🧹 Clear Form</button>
+        </div>
+    </div>
+
+    <div class="modal-overlay" id="commentModal" role="dialog" aria-modal="true">
+        <div class="modal-card">
+            <h3 id="modalTitle">Edit notes</h3>
+            <textarea id="modalTextarea" placeholder="Type here..."></textarea>
+            <div class="modal-actions">
+                <button class="save-btn" id="modalCancelBtn">Cancel</button>
+                <button class="save-btn" id="modalSaveBtn">Save</button>
+            </div>
+        </div>
     </div>
 
     <script>
@@ -1124,9 +1222,86 @@
             }
         }
 
-        // Save as PDF
-        document.getElementById('savePdfBtn').addEventListener('click', () => {
-            window.print();
+        function savePdf() { window.print(); }
+        document.getElementById('savePdfBtnTop').addEventListener('click', savePdf);
+        document.getElementById('savePdfBtnBottom').addEventListener('click', savePdf);
+
+        function clearForm() {
+            if (!confirm('Clear all form entries?')) return;
+            document.querySelectorAll('input[type="radio"]').forEach(r => r.checked = false);
+            document.querySelectorAll('input[type="date"], input[type="text"]').forEach(el => el.value = '');
+            document.querySelectorAll('.comment-btn').forEach(btn => {
+                btn.dataset.value = '';
+                btn.classList.remove('has-content');
+                btn.textContent = 'Tap to add details';
+                btn.nextElementSibling.textContent = '';
+            });
+            document.getElementById('dateInput').valueAsDate = new Date();
+        }
+
+        document.getElementById('clearFormBtnTop').addEventListener('click', clearForm);
+        document.getElementById('clearFormBtnBottom').addEventListener('click', clearForm);
+
+        function applyCategoryAlternating() {
+            document.querySelectorAll('tbody').forEach(tbody => {
+                let idx = 0;
+                tbody.querySelectorAll('tr.category-row').forEach(row => {
+                    row.classList.remove('category-alt-1', 'category-alt-2');
+                    row.classList.add(idx % 2 === 0 ? 'category-alt-1' : 'category-alt-2');
+                    idx += 1;
+                });
+            });
+        }
+
+        const commentModal = document.getElementById('commentModal');
+        const modalTitle = document.getElementById('modalTitle');
+        const modalTextarea = document.getElementById('modalTextarea');
+        const modalCancelBtn = document.getElementById('modalCancelBtn');
+        const modalSaveBtn = document.getElementById('modalSaveBtn');
+        let activeCommentBtn = null;
+
+        function updateCommentButton(btn, value) {
+            const text = value.trim();
+            btn.dataset.value = value;
+            btn.classList.toggle('has-content', Boolean(text));
+            btn.textContent = text ? (text.length > 45 ? `${text.slice(0, 45)}…` : text) : 'Tap to add details';
+            if (btn.nextElementSibling) btn.nextElementSibling.textContent = value;
+        }
+
+        function initCommentButtons() {
+            document.querySelectorAll('.checklist-sheet tbody tr').forEach(row => {
+                const cells = row.querySelectorAll('td');
+                [5, 6].forEach((i) => {
+                    const cell = cells[i];
+                    if (!cell) return;
+                    const textarea = cell.querySelector('textarea');
+                    if (!textarea) return;
+                    const label = i === 5 ? 'AC Comments' : 'Action Items';
+                    const btn = document.createElement('button');
+                    btn.type = 'button';
+                    btn.className = 'comment-btn';
+                    btn.dataset.label = label;
+                    const printDiv = document.createElement('div');
+                    printDiv.className = 'comment-print';
+                    updateCommentButton(btn, textarea.value || '');
+                    btn.addEventListener('click', () => {
+                        activeCommentBtn = btn;
+                        modalTitle.textContent = `Edit ${label}`;
+                        modalTextarea.value = btn.dataset.value || '';
+                        commentModal.classList.add('open');
+                        modalTextarea.focus();
+                    });
+                    cell.innerHTML = '';
+                    cell.appendChild(btn);
+                    cell.appendChild(printDiv);
+                });
+            });
+        }
+
+        modalCancelBtn.addEventListener('click', () => commentModal.classList.remove('open'));
+        modalSaveBtn.addEventListener('click', () => {
+            if (activeCommentBtn) updateCommentButton(activeCommentBtn, modalTextarea.value);
+            commentModal.classList.remove('open');
         });
 
         // Save as Excel (basic implementation - converts to CSV)
@@ -1142,6 +1317,7 @@
             csv.push(`Observer Name:,${document.getElementById('nameInput').value}`);
             csv.push(`Date:,${document.getElementById('dateInput').value}`);
             csv.push(`Site:,${document.getElementById('siteInput').value}`);
+            csv.push(`Manager on Duty:,${document.getElementById('managerOnDutyInput').value}`);
             csv.push('');
             
             // Add table headers
@@ -1171,9 +1347,9 @@
                 rowData.push(pendingRadio && pendingRadio.checked ? 'Pending' : '');
                 
                 // AC Comments
-                rowData.push(cells[5].querySelector('textarea')?.value || '');
+                rowData.push(cells[5].querySelector('.comment-btn')?.dataset.value || '');
                 // Action Items
-                rowData.push(cells[6].querySelector('textarea')?.value || '');
+                rowData.push(cells[6].querySelector('.comment-btn')?.dataset.value || '');
                 // Follow Up Date
                 const dateInput = cells[7]?.querySelector('input[type="date"]');
                 rowData.push(dateInput ? dateInput.value : '');
@@ -1193,6 +1369,8 @@
 
         // Set today's date as default
         document.getElementById('dateInput').valueAsDate = new Date();
+        initCommentButtons();
+        applyCategoryAlternating();
     </script>
 </body>
 </html>
