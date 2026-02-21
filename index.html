@@ -25,11 +25,8 @@
             --input-border: #cccccc;
             --checkbox-bg: #ffffff;
             --shadow: rgba(0, 0, 0, 0.1);
-            --people-bg: #f8d7da;
-            --operations-bg: #ffe5cc;
-            --customer-bg: #d9ecff;
-            --cash-bg: #d9f2d9;
-            --financial-bg: #eadcff;
+            --category-alt-1: #d9d9d9;
+            --category-alt-2: #efefef;
         }
 
         [data-theme="dark"] {
@@ -46,11 +43,8 @@
             --input-border: #404040;
             --checkbox-bg: #2d2d2d;
             --shadow: rgba(0, 0, 0, 0.3);
-            --people-bg: #5a3f45;
-            --operations-bg: #5a4a3f;
-            --customer-bg: #3b4f66;
-            --cash-bg: #3f5a3f;
-            --financial-bg: #4f3f66;
+            --category-alt-1: #3a3a3a;
+            --category-alt-2: #2a2a2a;
         }
 
         body {
@@ -245,24 +239,12 @@
             font-weight: bold;
         }
 
-        tbody tr.category-row.category-people {
-            background-color: var(--people-bg);
+        tbody tr.category-row.category-alt-1 {
+            background-color: var(--category-alt-1);
         }
 
-        tbody tr.category-row.category-operations {
-            background-color: var(--operations-bg);
-        }
-
-        tbody tr.category-row.category-customer {
-            background-color: var(--customer-bg);
-        }
-
-        tbody tr.category-row.category-cash {
-            background-color: var(--cash-bg);
-        }
-
-        tbody tr.category-row.category-financial {
-            background-color: var(--financial-bg);
+        tbody tr.category-row.category-alt-2 {
+            background-color: var(--category-alt-2);
         }
 
         tbody tr.category-row:hover {
@@ -390,6 +372,75 @@
             font-size: 12px;
         }
 
+        .comment-btn {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid var(--input-border);
+            border-radius: 4px;
+            background: var(--input-bg);
+            color: var(--text-secondary);
+            text-align: left;
+            cursor: pointer;
+            min-height: 36px;
+        }
+
+        .comment-btn.has-content {
+            color: var(--text-primary);
+            font-weight: 500;
+        }
+
+        .comment-print {
+            display: none;
+            white-space: pre-wrap;
+            word-break: break-word;
+        }
+
+        .modal-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.6);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 3000;
+            padding: 16px;
+        }
+
+        .modal-overlay.open { display: flex; }
+
+        .modal-card {
+            width: min(700px, 100%);
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            border-radius: 8px;
+            padding: 16px;
+        }
+
+        .modal-card textarea {
+            min-height: 200px;
+            font-size: 15px;
+            margin-top: 10px;
+        }
+
+        .modal-actions {
+            display: flex;
+            justify-content: flex-end;
+            gap: 8px;
+            margin-top: 10px;
+        }
+
+        @media print {
+            .controls, .sheet-tabs, .same-above-btn, .comment-btn, .modal-overlay {
+                display: none !important;
+            }
+            .sticky-header { position: static; }
+            .comment-print { display: block; min-height: 40px; }
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 10px;
+            }
 
         .status-select {
             width: 100%;
@@ -525,7 +576,7 @@
         </div>
 
         <div class="save-buttons">
-            <button class="save-btn" id="savePdfBtnTop">📄 Save as PDF</button>
+            <button class="save-btn" id="savePdfBtnTop">📄 Save as PDF (Send to Ops Team + Store Manager)</button>
             <button class="save-btn" id="saveExcelBtn">📊 Save as Excel</button>
             <button class="save-btn" id="clearFormBtnTop">🧹 Clear Form</button>
         </div>
@@ -1151,7 +1202,7 @@
         </div>
 
         <div class="save-buttons">
-            <button class="save-btn" id="savePdfBtnBottom">📄 Save as PDF</button>
+            <button class="save-btn" id="savePdfBtnBottom">📄 Save as PDF (Send to Ops Team + Store Manager)</button>
             <button class="save-btn" id="clearFormBtnBottom">🧹 Clear Form</button>
         </div>
     </div>
@@ -1239,24 +1290,13 @@
             }
         }
 
-        function syncPrintText() {
-            document.querySelectorAll('.comment-btn').forEach(btn => {
-                if (btn.nextElementSibling) btn.nextElementSibling.textContent = btn.dataset.value || '';
-            });
-        }
-
-        function showPdfReminder() {
-            if (confirm("Don't forget to send a copy to Ops Team and the Store Manager!\n\nPress OK for 'Will Do' or Cancel for 'Never Mind'")) {
-                syncPrintText();
-                window.print();
-            }
-        }
-        document.getElementById('savePdfBtnTop').addEventListener('click', showPdfReminder);
-        document.getElementById('savePdfBtnBottom').addEventListener('click', showPdfReminder);
+        function savePdf() { window.print(); }
+        document.getElementById('savePdfBtnTop').addEventListener('click', savePdf);
+        document.getElementById('savePdfBtnBottom').addEventListener('click', savePdf);
 
         function clearForm() {
             if (!confirm('Clear all form entries?')) return;
-            document.querySelectorAll('.status-select').forEach(select => { select.value = ''; select.dispatchEvent(new Event('change')); });
+            document.querySelectorAll('input[type="radio"]').forEach(r => r.checked = false);
             document.querySelectorAll('input[type="date"], input[type="text"]').forEach(el => el.value = '');
             document.querySelectorAll('.comment-btn').forEach(btn => {
                 btn.dataset.value = '';
@@ -1270,58 +1310,13 @@
         document.getElementById('clearFormBtnTop').addEventListener('click', clearForm);
         document.getElementById('clearFormBtnBottom').addEventListener('click', clearForm);
 
-        function applyCategoryColors() {
-            const classMap = {
-                'people & scheduling': 'category-people',
-                'operations standards': 'category-operations',
-                'guest experience': 'category-customer',
-                'cash & controls': 'category-cash',
-                'financial performance': 'category-financial'
-            };
-
-            document.querySelectorAll('tr.category-row').forEach(row => {
-                row.classList.remove('category-people', 'category-operations', 'category-customer', 'category-cash', 'category-financial');
-                const categoryName = row.querySelector('td')?.textContent.trim().toLowerCase();
-                const className = classMap[categoryName];
-                if (className) row.classList.add(className);
-            });
-        }
-
-        function convertStatusColumns() {
-            document.querySelectorAll('.checklist-sheet table').forEach(table => {
-                const headerRow = table.querySelector('thead tr');
-                if (headerRow && headerRow.children.length >= 8) {
-                    headerRow.children[2].textContent = 'Status';
-                    headerRow.children[2].style.width = '10%';
-                    headerRow.children[3].remove();
-                    headerRow.children[3].remove();
-                }
-
-                table.querySelectorAll('tbody tr').forEach(row => {
-                    const cells = row.querySelectorAll('td');
-                    if (cells.length < 8) return;
-                    const yesRadio = cells[2].querySelector('input[type="radio"]');
-                    const noRadio = cells[3].querySelector('input[type="radio"]');
-                    const pendingRadio = cells[4].querySelector('input[type="radio"]');
-                    let selected = '';
-                    if (yesRadio?.checked) selected = 'yes';
-                    if (noRadio?.checked) selected = 'no';
-                    if (pendingRadio?.checked) selected = 'pending';
-
-                    const select = document.createElement('select');
-                    select.className = 'status-select';
-                    select.innerHTML = `<option value="">Select</option><option value="yes">Yes</option><option value="no">No</option><option value="pending">Pending</option>`;
-                    select.value = selected;
-                    select.addEventListener('change', () => {
-                        select.classList.remove('status-yes', 'status-no', 'status-pending');
-                        if (select.value) select.classList.add(`status-${select.value}`);
-                    });
-                    select.dispatchEvent(new Event('change'));
-
-                    cells[2].innerHTML = '';
-                    cells[2].appendChild(select);
-                    cells[3].remove();
-                    cells[4].remove();
+        function applyCategoryAlternating() {
+            document.querySelectorAll('tbody').forEach(tbody => {
+                let idx = 0;
+                tbody.querySelectorAll('tr.category-row').forEach(row => {
+                    row.classList.remove('category-alt-1', 'category-alt-2');
+                    row.classList.add(idx % 2 === 0 ? 'category-alt-1' : 'category-alt-2');
+                    idx += 1;
                 });
             });
         }
@@ -1344,12 +1339,12 @@
         function initCommentButtons() {
             document.querySelectorAll('.checklist-sheet tbody tr').forEach(row => {
                 const cells = row.querySelectorAll('td');
-                [3, 4].forEach((i) => {
+                [5, 6].forEach((i) => {
                     const cell = cells[i];
                     if (!cell) return;
                     const textarea = cell.querySelector('textarea');
                     if (!textarea) return;
-                    const label = i === 3 ? 'AC Comments' : 'Action Items';
+                    const label = i === 5 ? 'AC Comments' : 'Action Items';
                     const btn = document.createElement('button');
                     btn.type = 'button';
                     btn.className = 'comment-btn';
@@ -1415,9 +1410,9 @@
                 rowData.push(statusSelect ? statusSelect.value : '');
 
                 // AC Comments
-                rowData.push(cells[3].querySelector('.comment-btn')?.dataset.value || '');
+                rowData.push(cells[5].querySelector('.comment-btn')?.dataset.value || '');
                 // Action Items
-                rowData.push(cells[4].querySelector('.comment-btn')?.dataset.value || '');
+                rowData.push(cells[6].querySelector('.comment-btn')?.dataset.value || '');
                 // Follow Up Date
                 const dateInput = cells[5]?.querySelector('input[type="date"]');
                 rowData.push(dateInput ? dateInput.value : '');
@@ -1437,10 +1432,8 @@
 
         // Set today's date as default
         document.getElementById('dateInput').valueAsDate = new Date();
-        convertStatusColumns();
         initCommentButtons();
-        applyCategoryColors();
-        window.addEventListener('beforeprint', syncPrintText);
+        applyCategoryAlternating();
     </script>
 </body>
 </html>
