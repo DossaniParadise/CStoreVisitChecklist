@@ -92,7 +92,7 @@
         }
 
         .sticky-header {
-            position: sticky;
+            position: static;
             top: 0;
             background-color: var(--bg-header);
             color: var(--text-header);
@@ -442,22 +442,97 @@
                 padding: 10px;
             }
 
-            .controls {
-                top: 10px;
-                right: 10px;
-            }
+        .status-select {
+            width: 100%;
+            border: 1px solid var(--input-border);
+            border-radius: 4px;
+            padding: 6px;
+            font-size: 12px;
+            font-weight: 600;
+            background: var(--input-bg);
+            color: var(--text-primary);
+        }
 
-            .header-title {
-                font-size: 20px;
-            }
+        .status-select.status-yes { background: #d8f5df; color: #1e7c3c; }
+        .status-select.status-no { background: #f9d6d6; color: #9e2d2d; }
+        .status-select.status-pending { background: #fff3cd; color: #9a6a00; }
 
-            table {
-                font-size: 12px;
-            }
+        .comment-btn {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid var(--input-border);
+            border-radius: 4px;
+            background: var(--input-bg);
+            color: var(--text-secondary);
+            text-align: left;
+            cursor: pointer;
+            min-height: 36px;
+        }
 
-            th, td {
-                padding: 8px 4px;
+        .comment-btn.has-content {
+            color: var(--text-primary);
+            font-weight: 500;
+        }
+
+        .comment-print {
+            display: none;
+            white-space: pre-wrap;
+            word-break: break-word;
+        }
+
+        .modal-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.6);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 3000;
+            padding: 16px;
+        }
+
+        .modal-overlay.open { display: flex; }
+
+        .modal-card {
+            width: min(700px, 100%);
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            border-radius: 8px;
+            padding: 16px;
+        }
+
+        .modal-card textarea {
+            min-height: 200px;
+            font-size: 15px;
+            margin-top: 10px;
+        }
+
+        .modal-actions {
+            display: flex;
+            justify-content: flex-end;
+            gap: 8px;
+            margin-top: 10px;
+        }
+
+        @media print {
+            .controls, .sheet-tabs, .same-above-btn, .comment-btn, .modal-overlay {
+                display: none !important;
             }
+            .sticky-header { position: static; }
+            .status-select { border: none; background: transparent !important; }
+            .comment-print { display: block; min-height: 40px; }
+        }
+
+        @media (max-width: 768px) {
+            .container { padding: 8px; }
+            .controls { top: 10px; right: 10px; }
+            .header-title { font-size: 20px; }
+            table { font-size: 11px; table-layout: fixed; }
+            th, td { padding: 6px 3px; overflow-wrap: anywhere; }
+            .save-buttons { justify-content: center; }
+            .save-btn { width: 100%; }
+            .same-above-btn { display: none; }
+            .header-inputs { grid-template-columns: 1fr; }
         }
 
         @media (max-width: 480px) {
@@ -470,7 +545,6 @@
 <body>
     <div class="controls">
         <button class="icon-btn" id="themeToggle" title="Toggle Dark/Light Mode">🌙</button>
-        <button class="icon-btn" id="layoutToggle" title="Toggle Mobile/Desktop Layout">📱</button>
     </div>
 
     <div class="container">
@@ -1161,24 +1235,18 @@
             }
         });
 
-        // Layout Toggle
-        const layoutToggle = document.getElementById('layoutToggle');
+        // Automatic device detection for layout
         const container = document.querySelector('.container');
         const headerInputs = document.getElementById('headerInputs');
-        let isMobileLayout = false;
 
-        layoutToggle.addEventListener('click', () => {
-            isMobileLayout = !isMobileLayout;
-            if (isMobileLayout) {
-                container.classList.add('mobile-layout');
-                headerInputs.classList.add('mobile');
-                layoutToggle.textContent = '🖥️';
-            } else {
-                container.classList.remove('mobile-layout');
-                headerInputs.classList.remove('mobile');
-                layoutToggle.textContent = '📱';
-            }
-        });
+        function applyResponsiveLayout() {
+            const isMobile = window.matchMedia('(max-width: 768px)').matches;
+            container.classList.toggle('mobile-layout', isMobile);
+            headerInputs.classList.toggle('mobile', isMobile);
+        }
+
+        window.addEventListener('resize', applyResponsiveLayout);
+        applyResponsiveLayout();
 
         // Sheet Tabs
         const tabButtons = document.querySelectorAll('.tab-btn');
@@ -1337,21 +1405,16 @@
                 // Task
                 rowData.push(cells[1].textContent.trim());
                 
-                // Check radio buttons for Yes/No/Pending
-                const yesRadio = cells[2].querySelector('input[type="radio"]');
-                const noRadio = cells[3].querySelector('input[type="radio"]');
-                const pendingRadio = cells[4].querySelector('input[type="radio"]');
-                
-                rowData.push(yesRadio && yesRadio.checked ? 'Yes' : '');
-                rowData.push(noRadio && noRadio.checked ? 'No' : '');
-                rowData.push(pendingRadio && pendingRadio.checked ? 'Pending' : '');
-                
+                // Status
+                const statusSelect = cells[2].querySelector('.status-select');
+                rowData.push(statusSelect ? statusSelect.value : '');
+
                 // AC Comments
                 rowData.push(cells[5].querySelector('.comment-btn')?.dataset.value || '');
                 // Action Items
                 rowData.push(cells[6].querySelector('.comment-btn')?.dataset.value || '');
                 // Follow Up Date
-                const dateInput = cells[7]?.querySelector('input[type="date"]');
+                const dateInput = cells[5]?.querySelector('input[type="date"]');
                 rowData.push(dateInput ? dateInput.value : '');
                 
                 csv.push(rowData.map(val => `"${val}"`).join(','));
