@@ -25,6 +25,11 @@
             --input-border: #cccccc;
             --checkbox-bg: #ffffff;
             --shadow: rgba(0, 0, 0, 0.1);
+            --people-bg: #f8d7da;
+            --operations-bg: #ffe5cc;
+            --customer-bg: #d9ecff;
+            --cash-bg: #d9f2d9;
+            --financial-bg: #eadcff;
         }
 
         [data-theme="dark"] {
@@ -41,6 +46,11 @@
             --input-border: #404040;
             --checkbox-bg: #2d2d2d;
             --shadow: rgba(0, 0, 0, 0.3);
+            --people-bg: #5a3f45;
+            --operations-bg: #5a4a3f;
+            --customer-bg: #3b4f66;
+            --cash-bg: #3f5a3f;
+            --financial-bg: #4f3f66;
         }
 
         body {
@@ -88,7 +98,7 @@
         }
 
         .sticky-header {
-            position: sticky;
+            position: static;
             top: 0;
             background-color: var(--bg-header);
             color: var(--text-header);
@@ -169,6 +179,7 @@
             gap: 10px;
             margin-bottom: 20px;
             justify-content: flex-end;
+            flex-wrap: wrap;
         }
 
         .save-btn {
@@ -231,12 +242,31 @@
         }
 
         tbody tr.category-row {
-            background-color: var(--category-bg);
             font-weight: bold;
         }
 
+        tbody tr.category-row.category-people {
+            background-color: var(--people-bg);
+        }
+
+        tbody tr.category-row.category-operations {
+            background-color: var(--operations-bg);
+        }
+
+        tbody tr.category-row.category-customer {
+            background-color: var(--customer-bg);
+        }
+
+        tbody tr.category-row.category-cash {
+            background-color: var(--cash-bg);
+        }
+
+        tbody tr.category-row.category-financial {
+            background-color: var(--financial-bg);
+        }
+
         tbody tr.category-row:hover {
-            background-color: var(--category-bg);
+            filter: brightness(0.98);
         }
 
         td {
@@ -360,27 +390,98 @@
             font-size: 12px;
         }
 
+
+        .status-select {
+            width: 100%;
+            border: 1px solid var(--input-border);
+            border-radius: 4px;
+            padding: 6px;
+            font-size: 12px;
+            font-weight: 600;
+            background: var(--input-bg);
+            color: var(--text-primary);
+        }
+
+        .status-select.status-yes { background: #d8f5df; color: #1e7c3c; }
+        .status-select.status-no { background: #f9d6d6; color: #9e2d2d; }
+        .status-select.status-pending { background: #fff3cd; color: #9a6a00; }
+
+        .comment-btn {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid var(--input-border);
+            border-radius: 4px;
+            background: var(--input-bg);
+            color: var(--text-secondary);
+            text-align: left;
+            cursor: pointer;
+            min-height: 36px;
+        }
+
+        .comment-btn.has-content {
+            color: var(--text-primary);
+            font-weight: 500;
+        }
+
+        .comment-print {
+            display: none;
+            white-space: pre-wrap;
+            word-break: break-word;
+        }
+
+        .modal-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.6);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 3000;
+            padding: 16px;
+        }
+
+        .modal-overlay.open { display: flex; }
+
+        .modal-card {
+            width: min(700px, 100%);
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            border-radius: 8px;
+            padding: 16px;
+        }
+
+        .modal-card textarea {
+            min-height: 200px;
+            font-size: 15px;
+            margin-top: 10px;
+        }
+
+        .modal-actions {
+            display: flex;
+            justify-content: flex-end;
+            gap: 8px;
+            margin-top: 10px;
+        }
+
+        @media print {
+            .controls, .sheet-tabs, .same-above-btn, .comment-btn, .modal-overlay {
+                display: none !important;
+            }
+            .sticky-header { position: static; }
+            .status-select { border: none; background: transparent !important; }
+            .comment-print { display: block; min-height: 40px; }
+        }
+
         @media (max-width: 768px) {
-            .container {
-                padding: 10px;
-            }
-
-            .controls {
-                top: 10px;
-                right: 10px;
-            }
-
-            .header-title {
-                font-size: 20px;
-            }
-
-            table {
-                font-size: 12px;
-            }
-
-            th, td {
-                padding: 8px 4px;
-            }
+            .container { padding: 8px; }
+            .controls { top: 10px; right: 10px; }
+            .header-title { font-size: 20px; }
+            table { font-size: 11px; table-layout: fixed; }
+            th, td { padding: 6px 3px; overflow-wrap: anywhere; }
+            .save-buttons { justify-content: center; }
+            .save-btn { width: 100%; }
+            .same-above-btn { display: none; }
+            .header-inputs { grid-template-columns: 1fr; }
         }
 
         @media (max-width: 480px) {
@@ -393,7 +494,6 @@
 <body>
     <div class="controls">
         <button class="icon-btn" id="themeToggle" title="Toggle Dark/Light Mode">🌙</button>
-        <button class="icon-btn" id="layoutToggle" title="Toggle Mobile/Desktop Layout">📱</button>
     </div>
 
     <div class="container">
@@ -412,6 +512,10 @@
                     <label for="siteInput">Site</label>
                     <input type="text" id="siteInput" placeholder="Enter site">
                 </div>
+                <div class="input-group">
+                    <label for="managerOnDutyInput">Manager on Duty</label>
+                    <input type="text" id="managerOnDutyInput" placeholder="Enter manager on duty name">
+                </div>
             </div>
         </div>
 
@@ -421,8 +525,9 @@
         </div>
 
         <div class="save-buttons">
-            <button class="save-btn" id="savePdfBtn">📄 Save as PDF</button>
+            <button class="save-btn" id="savePdfBtnTop">📄 Save as PDF</button>
             <button class="save-btn" id="saveExcelBtn">📊 Save as Excel</button>
+            <button class="save-btn" id="clearFormBtnTop">🧹 Clear Form</button>
         </div>
 
         <div class="checklist-container">
@@ -772,7 +877,7 @@
                         </tr>
                         <tr>
                             <td></td>
-                            <td class="task-cell">Preventatie Maintenance Checklists Completed</td>
+                            <td class="task-cell">Preventative Maintenance Checklists Completed</td>
                             <td><div class="checkbox-group"><input type="radio" name="response_ff_5" value="yes" class="checkbox-yes"></div></td>
                             <td><div class="checkbox-group"><input type="radio" name="response_ff_5" value="no" class="checkbox-no"></div></td>
                             <td><div class="checkbox-group"><input type="radio" name="response_ff_5" value="pending" class="checkbox-pending"></div></td>
@@ -1044,6 +1149,22 @@
                 </table>
             </div>
         </div>
+
+        <div class="save-buttons">
+            <button class="save-btn" id="savePdfBtnBottom">📄 Save as PDF</button>
+            <button class="save-btn" id="clearFormBtnBottom">🧹 Clear Form</button>
+        </div>
+    </div>
+
+    <div class="modal-overlay" id="commentModal" role="dialog" aria-modal="true">
+        <div class="modal-card">
+            <h3 id="modalTitle">Edit notes</h3>
+            <textarea id="modalTextarea" placeholder="Type here..."></textarea>
+            <div class="modal-actions">
+                <button class="save-btn" id="modalCancelBtn">Cancel</button>
+                <button class="save-btn" id="modalSaveBtn">Save</button>
+            </div>
+        </div>
     </div>
 
     <script>
@@ -1063,24 +1184,18 @@
             }
         });
 
-        // Layout Toggle
-        const layoutToggle = document.getElementById('layoutToggle');
+        // Automatic device detection for layout
         const container = document.querySelector('.container');
         const headerInputs = document.getElementById('headerInputs');
-        let isMobileLayout = false;
 
-        layoutToggle.addEventListener('click', () => {
-            isMobileLayout = !isMobileLayout;
-            if (isMobileLayout) {
-                container.classList.add('mobile-layout');
-                headerInputs.classList.add('mobile');
-                layoutToggle.textContent = '🖥️';
-            } else {
-                container.classList.remove('mobile-layout');
-                headerInputs.classList.remove('mobile');
-                layoutToggle.textContent = '📱';
-            }
-        });
+        function applyResponsiveLayout() {
+            const isMobile = window.matchMedia('(max-width: 768px)').matches;
+            container.classList.toggle('mobile-layout', isMobile);
+            headerInputs.classList.toggle('mobile', isMobile);
+        }
+
+        window.addEventListener('resize', applyResponsiveLayout);
+        applyResponsiveLayout();
 
         // Sheet Tabs
         const tabButtons = document.querySelectorAll('.tab-btn');
@@ -1124,9 +1239,142 @@
             }
         }
 
-        // Save as PDF
-        document.getElementById('savePdfBtn').addEventListener('click', () => {
-            window.print();
+        function syncPrintText() {
+            document.querySelectorAll('.comment-btn').forEach(btn => {
+                if (btn.nextElementSibling) btn.nextElementSibling.textContent = btn.dataset.value || '';
+            });
+        }
+
+        function showPdfReminder() {
+            if (confirm("Don't forget to send a copy to Ops Team and the Store Manager!\n\nPress OK for 'Will Do' or Cancel for 'Never Mind'")) {
+                syncPrintText();
+                window.print();
+            }
+        }
+        document.getElementById('savePdfBtnTop').addEventListener('click', showPdfReminder);
+        document.getElementById('savePdfBtnBottom').addEventListener('click', showPdfReminder);
+
+        function clearForm() {
+            if (!confirm('Clear all form entries?')) return;
+            document.querySelectorAll('.status-select').forEach(select => { select.value = ''; select.dispatchEvent(new Event('change')); });
+            document.querySelectorAll('input[type="date"], input[type="text"]').forEach(el => el.value = '');
+            document.querySelectorAll('.comment-btn').forEach(btn => {
+                btn.dataset.value = '';
+                btn.classList.remove('has-content');
+                btn.textContent = 'Tap to add details';
+                btn.nextElementSibling.textContent = '';
+            });
+            document.getElementById('dateInput').valueAsDate = new Date();
+        }
+
+        document.getElementById('clearFormBtnTop').addEventListener('click', clearForm);
+        document.getElementById('clearFormBtnBottom').addEventListener('click', clearForm);
+
+        function applyCategoryColors() {
+            const classMap = {
+                'people & scheduling': 'category-people',
+                'operations standards': 'category-operations',
+                'guest experience': 'category-customer',
+                'cash & controls': 'category-cash',
+                'financial performance': 'category-financial'
+            };
+
+            document.querySelectorAll('tr.category-row').forEach(row => {
+                row.classList.remove('category-people', 'category-operations', 'category-customer', 'category-cash', 'category-financial');
+                const categoryName = row.querySelector('td')?.textContent.trim().toLowerCase();
+                const className = classMap[categoryName];
+                if (className) row.classList.add(className);
+            });
+        }
+
+        function convertStatusColumns() {
+            document.querySelectorAll('.checklist-sheet table').forEach(table => {
+                const headerRow = table.querySelector('thead tr');
+                if (headerRow && headerRow.children.length >= 8) {
+                    headerRow.children[2].textContent = 'Status';
+                    headerRow.children[2].style.width = '10%';
+                    headerRow.children[3].remove();
+                    headerRow.children[3].remove();
+                }
+
+                table.querySelectorAll('tbody tr').forEach(row => {
+                    const cells = row.querySelectorAll('td');
+                    if (cells.length < 8) return;
+                    const yesRadio = cells[2].querySelector('input[type="radio"]');
+                    const noRadio = cells[3].querySelector('input[type="radio"]');
+                    const pendingRadio = cells[4].querySelector('input[type="radio"]');
+                    let selected = '';
+                    if (yesRadio?.checked) selected = 'yes';
+                    if (noRadio?.checked) selected = 'no';
+                    if (pendingRadio?.checked) selected = 'pending';
+
+                    const select = document.createElement('select');
+                    select.className = 'status-select';
+                    select.innerHTML = `<option value="">Select</option><option value="yes">Yes</option><option value="no">No</option><option value="pending">Pending</option>`;
+                    select.value = selected;
+                    select.addEventListener('change', () => {
+                        select.classList.remove('status-yes', 'status-no', 'status-pending');
+                        if (select.value) select.classList.add(`status-${select.value}`);
+                    });
+                    select.dispatchEvent(new Event('change'));
+
+                    cells[2].innerHTML = '';
+                    cells[2].appendChild(select);
+                    cells[3].remove();
+                    cells[4].remove();
+                });
+            });
+        }
+
+        const commentModal = document.getElementById('commentModal');
+        const modalTitle = document.getElementById('modalTitle');
+        const modalTextarea = document.getElementById('modalTextarea');
+        const modalCancelBtn = document.getElementById('modalCancelBtn');
+        const modalSaveBtn = document.getElementById('modalSaveBtn');
+        let activeCommentBtn = null;
+
+        function updateCommentButton(btn, value) {
+            const text = value.trim();
+            btn.dataset.value = value;
+            btn.classList.toggle('has-content', Boolean(text));
+            btn.textContent = text ? (text.length > 45 ? `${text.slice(0, 45)}…` : text) : 'Tap to add details';
+            if (btn.nextElementSibling) btn.nextElementSibling.textContent = value;
+        }
+
+        function initCommentButtons() {
+            document.querySelectorAll('.checklist-sheet tbody tr').forEach(row => {
+                const cells = row.querySelectorAll('td');
+                [3, 4].forEach((i) => {
+                    const cell = cells[i];
+                    if (!cell) return;
+                    const textarea = cell.querySelector('textarea');
+                    if (!textarea) return;
+                    const label = i === 3 ? 'AC Comments' : 'Action Items';
+                    const btn = document.createElement('button');
+                    btn.type = 'button';
+                    btn.className = 'comment-btn';
+                    btn.dataset.label = label;
+                    const printDiv = document.createElement('div');
+                    printDiv.className = 'comment-print';
+                    updateCommentButton(btn, textarea.value || '');
+                    btn.addEventListener('click', () => {
+                        activeCommentBtn = btn;
+                        modalTitle.textContent = `Edit ${label}`;
+                        modalTextarea.value = btn.dataset.value || '';
+                        commentModal.classList.add('open');
+                        modalTextarea.focus();
+                    });
+                    cell.innerHTML = '';
+                    cell.appendChild(btn);
+                    cell.appendChild(printDiv);
+                });
+            });
+        }
+
+        modalCancelBtn.addEventListener('click', () => commentModal.classList.remove('open'));
+        modalSaveBtn.addEventListener('click', () => {
+            if (activeCommentBtn) updateCommentButton(activeCommentBtn, modalTextarea.value);
+            commentModal.classList.remove('open');
         });
 
         // Save as Excel (basic implementation - converts to CSV)
@@ -1142,6 +1390,7 @@
             csv.push(`Observer Name:,${document.getElementById('nameInput').value}`);
             csv.push(`Date:,${document.getElementById('dateInput').value}`);
             csv.push(`Site:,${document.getElementById('siteInput').value}`);
+            csv.push(`Manager on Duty:,${document.getElementById('managerOnDutyInput').value}`);
             csv.push('');
             
             // Add table headers
@@ -1161,21 +1410,16 @@
                 // Task
                 rowData.push(cells[1].textContent.trim());
                 
-                // Check radio buttons for Yes/No/Pending
-                const yesRadio = cells[2].querySelector('input[type="radio"]');
-                const noRadio = cells[3].querySelector('input[type="radio"]');
-                const pendingRadio = cells[4].querySelector('input[type="radio"]');
-                
-                rowData.push(yesRadio && yesRadio.checked ? 'Yes' : '');
-                rowData.push(noRadio && noRadio.checked ? 'No' : '');
-                rowData.push(pendingRadio && pendingRadio.checked ? 'Pending' : '');
-                
+                // Status
+                const statusSelect = cells[2].querySelector('.status-select');
+                rowData.push(statusSelect ? statusSelect.value : '');
+
                 // AC Comments
-                rowData.push(cells[5].querySelector('textarea')?.value || '');
+                rowData.push(cells[3].querySelector('.comment-btn')?.dataset.value || '');
                 // Action Items
-                rowData.push(cells[6].querySelector('textarea')?.value || '');
+                rowData.push(cells[4].querySelector('.comment-btn')?.dataset.value || '');
                 // Follow Up Date
-                const dateInput = cells[7]?.querySelector('input[type="date"]');
+                const dateInput = cells[5]?.querySelector('input[type="date"]');
                 rowData.push(dateInput ? dateInput.value : '');
                 
                 csv.push(rowData.map(val => `"${val}"`).join(','));
@@ -1193,6 +1437,10 @@
 
         // Set today's date as default
         document.getElementById('dateInput').valueAsDate = new Date();
+        convertStatusColumns();
+        initCommentButtons();
+        applyCategoryColors();
+        window.addEventListener('beforeprint', syncPrintText);
     </script>
 </body>
 </html>
