@@ -2,14 +2,10 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
     <title>DPM Store Visit Checklist</title>
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
 
         :root {
             --bg-primary: #ffffff;
@@ -19,14 +15,21 @@
             --text-secondary: #666666;
             --text-header: #ffffff;
             --border-color: #dddddd;
-            --category-bg: #ecf0f1;
             --hover-bg: #e8e8e8;
             --input-bg: #ffffff;
             --input-border: #cccccc;
-            --checkbox-bg: #ffffff;
-            --shadow: rgba(0, 0, 0, 0.1);
-            --category-alt-1: #d9d9d9;
-            --category-alt-2: #efefef;
+            --shadow: rgba(0,0,0,0.1);
+            /* Category colors */
+            --cat-people:   #ffd6d6; /* pastel red */
+            --cat-ops:      #ffe5cc; /* pastel orange */
+            --cat-cx:       #cce5ff; /* pastel blue */
+            --cat-cash:     #d4f5d4; /* pastel green */
+            --cat-finance:  #e8d4f5; /* pastel purple */
+            --cat-fuel:     #fff0cc; /* pastel yellow */
+            --cat-food:     #ffe0f0; /* pastel pink */
+            --cat-systems:  #d4f0ff; /* pastel sky */
+            --cat-leadership:#f0e8d4; /* pastel tan */
+            --cat-default:  #e8f0e8; /* pastel sage */
         }
 
         [data-theme="dark"] {
@@ -37,508 +40,258 @@
             --text-secondary: #b0b0b0;
             --text-header: #ffffff;
             --border-color: #404040;
-            --category-bg: #2d2d2d;
             --hover-bg: #3a3a3a;
             --input-bg: #2d2d2d;
             --input-border: #404040;
-            --checkbox-bg: #2d2d2d;
-            --shadow: rgba(0, 0, 0, 0.3);
-            --category-alt-1: #3a3a3a;
-            --category-alt-2: #2a2a2a;
+            --shadow: rgba(0,0,0,0.3);
+            --cat-people:   #5a2a2a;
+            --cat-ops:      #5a3a1a;
+            --cat-cx:       #1a3a5a;
+            --cat-cash:     #1a4a1a;
+            --cat-finance:  #3a1a5a;
+            --cat-fuel:     #4a3a0a;
+            --cat-food:     #5a1a3a;
+            --cat-systems:  #0a3a5a;
+            --cat-leadership:#3a2a0a;
+            --cat-default:  #1a3a1a;
         }
 
         body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
             background-color: var(--bg-primary);
             color: var(--text-primary);
-            line-height: 1.6;
+            line-height: 1.5;
             transition: background-color 0.3s, color 0.3s;
         }
 
-        .container {
-            max-width: 1400px;
-            margin: 0 auto;
-            padding: 20px;
-        }
+        .container { max-width: 1400px; margin: 0 auto; padding: 16px; }
 
         .controls {
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            display: flex;
-            gap: 10px;
-            z-index: 1000;
+            position: fixed; top: 16px; right: 16px;
+            display: flex; gap: 8px; z-index: 1000;
         }
 
         .icon-btn {
-            width: 44px;
-            height: 44px;
-            border-radius: 50%;
+            width: 42px; height: 42px; border-radius: 50%;
             border: 2px solid var(--border-color);
             background-color: var(--bg-secondary);
-            color: var(--text-primary);
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 20px;
-            transition: all 0.3s;
-            box-shadow: 0 2px 5px var(--shadow);
+            color: var(--text-primary); cursor: pointer;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 18px; box-shadow: 0 2px 5px var(--shadow);
         }
 
-        .icon-btn:hover {
-            transform: scale(1.1);
-            box-shadow: 0 4px 8px var(--shadow);
-        }
-
-        .sticky-header {
-            position: static;
-            top: 0;
+        /* Header — NOT sticky */
+        .page-header {
             background-color: var(--bg-header);
             color: var(--text-header);
-            padding: 20px;
-            border-radius: 8px;
-            margin-bottom: 20px;
+            padding: 16px; border-radius: 8px;
+            margin-bottom: 16px;
             box-shadow: 0 4px 6px var(--shadow);
-            z-index: 100;
         }
 
         .header-title {
-            font-size: 24px;
-            font-weight: bold;
-            margin-bottom: 15px;
-            text-align: center;
+            font-size: 22px; font-weight: bold;
+            margin-bottom: 12px; text-align: center;
         }
 
         .header-inputs {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 15px;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 12px;
         }
 
-        .header-inputs.mobile {
-            grid-template-columns: 1fr;
-        }
-
-        .input-group {
-            display: flex;
-            flex-direction: column;
-        }
-
-        .input-group label {
-            font-size: 12px;
-            margin-bottom: 5px;
-            opacity: 0.9;
-        }
-
+        .input-group { display: flex; flex-direction: column; }
+        .input-group label { font-size: 11px; margin-bottom: 4px; opacity: 0.85; }
         .input-group input {
-            padding: 10px;
-            border: 1px solid var(--input-border);
-            border-radius: 4px;
-            background-color: var(--input-bg);
-            color: var(--text-primary);
-            font-size: 14px;
+            padding: 8px; border: 1px solid rgba(255,255,255,0.3);
+            border-radius: 4px; background: rgba(255,255,255,0.15);
+            color: #fff; font-size: 14px;
         }
+        .input-group input::placeholder { color: rgba(255,255,255,0.6); }
 
-        .sheet-tabs {
-            display: flex;
-            gap: 10px;
-            margin-bottom: 20px;
-        }
+        .sheet-tabs { display: flex; gap: 8px; margin-bottom: 14px; flex-wrap: wrap; }
 
         .tab-btn {
-            padding: 12px 24px;
-            border: 2px solid var(--border-color);
-            border-radius: 6px;
-            background-color: var(--bg-secondary);
-            color: var(--text-primary);
-            cursor: pointer;
-            font-size: 16px;
-            font-weight: 600;
-            transition: all 0.3s;
+            padding: 10px 20px; border: 2px solid var(--border-color);
+            border-radius: 6px; background: var(--bg-secondary);
+            color: var(--text-primary); cursor: pointer;
+            font-size: 14px; font-weight: 600; transition: all 0.2s;
         }
-
-        .tab-btn.active {
-            background-color: var(--bg-header);
-            color: var(--text-header);
-            border-color: var(--bg-header);
-        }
-
-        .tab-btn:hover:not(.active) {
-            background-color: var(--hover-bg);
-        }
+        .tab-btn.active { background: var(--bg-header); color: var(--text-header); border-color: var(--bg-header); }
 
         .save-buttons {
-            display: flex;
-            gap: 10px;
-            margin-bottom: 20px;
-            justify-content: flex-end;
-            flex-wrap: wrap;
+            display: flex; gap: 8px; margin-bottom: 14px;
+            justify-content: flex-end; flex-wrap: wrap;
         }
 
         .save-btn {
-            padding: 10px 20px;
-            border: 2px solid var(--border-color);
-            border-radius: 6px;
-            background-color: var(--bg-header);
-            color: var(--text-header);
-            cursor: pointer;
-            font-size: 14px;
-            font-weight: 600;
-            transition: all 0.3s;
-        }
-
-        .save-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 4px 8px var(--shadow);
-        }
-
-        .checklist-container {
-            background-color: var(--bg-secondary);
-            border-radius: 8px;
-            overflow: hidden;
-            box-shadow: 0 2px 8px var(--shadow);
-        }
-
-        .checklist-sheet {
-            display: none;
-        }
-
-        .checklist-sheet.active {
-            display: block;
-        }
-
-        table {
-            width: 100%;
-            border-collapse: collapse;
-        }
-
-        thead {
-            background-color: var(--bg-header);
-            color: var(--text-header);
-        }
-
-        th {
-            padding: 12px;
-            text-align: left;
-            font-weight: 600;
-            font-size: 14px;
-            border-bottom: 2px solid var(--border-color);
-        }
-
-        tbody tr {
-            border-bottom: 1px solid var(--border-color);
-            transition: background-color 0.2s;
-        }
-
-        tbody tr:hover {
-            background-color: var(--hover-bg);
-        }
-
-        tbody tr.category-row {
-            font-weight: bold;
-        }
-
-        tbody tr.category-row.category-alt-1 {
-            background-color: var(--category-alt-1);
-        }
-
-        tbody tr.category-row.category-alt-2 {
-            background-color: var(--category-alt-2);
-        }
-
-        tbody tr.category-row:hover {
-            filter: brightness(0.98);
-        }
-
-        td {
-            padding: 12px;
-            font-size: 14px;
-        }
-
-        .task-cell {
-            font-weight: 500;
-        }
-
-        .category-row .task-cell {
-            font-weight: 700;
-            font-size: 15px;
-        }
-
-        .checkbox-group {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-        }
-
-        input[type="checkbox"] {
-            width: 20px;
-            height: 20px;
-            cursor: pointer;
-            appearance: none;
-            border: 2px solid var(--input-border);
-            border-radius: 4px;
-            background-color: var(--checkbox-bg);
-            position: relative;
-            transition: all 0.3s;
-        }
-
-        input[type="checkbox"]:checked {
-            border-color: transparent;
-        }
-
-        input[type="checkbox"]:checked::after {
-            content: '✓';
-            position: absolute;
-            color: white;
-            font-size: 16px;
-            font-weight: bold;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-        }
-
-        .checkbox-yes:checked {
-            background-color: #27ae60;
-            border-color: #27ae60;
-        }
-
-        .checkbox-no:checked {
-            background-color: #e74c3c;
-            border-color: #e74c3c;
-        }
-
-        .checkbox-pending:checked {
-            background-color: #f39c12;
-            border-color: #f39c12;
-        }
-
-        input[type="text"],
-        input[type="date"],
-        textarea {
-            width: 100%;
-            padding: 8px;
-            border: 1px solid var(--input-border);
-            border-radius: 4px;
-            background-color: var(--input-bg);
-            color: var(--text-primary);
-            font-size: 13px;
-        }
-
-        textarea {
-            resize: vertical;
-            min-height: 40px;
-            font-family: inherit;
-        }
-
-        .date-cell {
-            display: flex;
-            flex-direction: column;
-            gap: 5px;
-        }
-
-        .same-above-btn {
-            padding: 4px 8px;
-            border: 1px solid var(--border-color);
-            border-radius: 3px;
-            background-color: var(--bg-secondary);
-            color: var(--text-secondary);
-            cursor: pointer;
-            font-size: 11px;
-            transition: all 0.2s;
+            padding: 9px 18px; border: 2px solid var(--border-color);
+            border-radius: 6px; background: var(--bg-header);
+            color: var(--text-header); cursor: pointer;
+            font-size: 13px; font-weight: 600; transition: all 0.2s;
             white-space: nowrap;
         }
+        .save-btn:hover { transform: translateY(-1px); box-shadow: 0 4px 8px var(--shadow); }
 
-        .same-above-btn:hover {
-            background-color: var(--hover-bg);
-            color: var(--text-primary);
+        .checklist-container {
+            background: var(--bg-secondary); border-radius: 8px;
+            overflow: hidden; box-shadow: 0 2px 8px var(--shadow);
         }
 
-        .mobile-layout table {
-            font-size: 12px;
+        .checklist-sheet { display: none; }
+        .checklist-sheet.active { display: block; }
+
+        /* Sticky THEAD only */
+        .table-wrap { overflow-x: auto; }
+
+        table { width: 100%; border-collapse: collapse; min-width: 600px; }
+
+        thead { background: var(--bg-header); color: var(--text-header); }
+        thead th {
+            padding: 10px 8px; text-align: left;
+            font-weight: 600; font-size: 13px;
+            border-bottom: 2px solid var(--border-color);
+            position: sticky; top: 0; z-index: 10;
+            background: var(--bg-header);
         }
 
-        .mobile-layout th,
-        .mobile-layout td {
-            padding: 8px 4px;
-        }
+        tbody tr { border-bottom: 1px solid var(--border-color); }
+        tbody tr:hover { filter: brightness(0.97); }
 
-        .mobile-layout .checkbox-group input[type="checkbox"] {
-            width: 18px;
-            height: 18px;
-        }
+        td { padding: 8px 6px; font-size: 13px; vertical-align: middle; }
 
-        .mobile-layout textarea {
-            font-size: 12px;
-        }
+        .task-cell { font-weight: 500; }
+        .category-row .task-cell { font-weight: 700; font-size: 14px; }
 
-        .comment-btn {
-            width: 100%;
-            padding: 8px;
-            border: 1px solid var(--input-border);
-            border-radius: 4px;
-            background: var(--input-bg);
-            color: var(--text-secondary);
-            text-align: left;
-            cursor: pointer;
-            min-height: 36px;
-        }
+        /* Category background colors applied via data attribute */
+        tr[data-cat="people"] { background-color: var(--cat-people); }
+        tr[data-cat="ops"]    { background-color: var(--cat-ops); }
+        tr[data-cat="cx"]     { background-color: var(--cat-cx); }
+        tr[data-cat="cash"]   { background-color: var(--cat-cash); }
+        tr[data-cat="finance"]{ background-color: var(--cat-finance); }
+        tr[data-cat="fuel"]   { background-color: var(--cat-fuel); }
+        tr[data-cat="food"]   { background-color: var(--cat-food); }
+        tr[data-cat="systems"]{ background-color: var(--cat-systems); }
+        tr[data-cat="leadership"]{ background-color: var(--cat-leadership); }
+        tr[data-cat="default"]{ background-color: var(--cat-default); }
 
-        .comment-btn.has-content {
-            color: var(--text-primary);
-            font-weight: 500;
-        }
-
-        .comment-print {
-            display: none;
-            white-space: pre-wrap;
-            word-break: break-word;
-        }
-
-        .modal-overlay {
-            position: fixed;
-            inset: 0;
-            background: rgba(0, 0, 0, 0.6);
-            display: none;
-            align-items: center;
-            justify-content: center;
-            z-index: 3000;
-            padding: 16px;
-        }
-
-        .modal-overlay.open { display: flex; }
-
-        .modal-card {
-            width: min(700px, 100%);
-            background: var(--bg-primary);
-            color: var(--text-primary);
-            border-radius: 8px;
-            padding: 16px;
-        }
-
-        .modal-card textarea {
-            min-height: 200px;
-            font-size: 15px;
-            margin-top: 10px;
-        }
-
-        .modal-actions {
-            display: flex;
-            justify-content: flex-end;
-            gap: 8px;
-            margin-top: 10px;
-        }
-
-        @media print {
-            .controls, .sheet-tabs, .same-above-btn, .comment-btn, .modal-overlay {
-                display: none !important;
-            }
-            .sticky-header { position: static; }
-            .comment-print { display: block; min-height: 40px; }
-        }
-
-        @media (max-width: 768px) {
-            .container {
-                padding: 10px;
-            }
-
+        /* Status dropdown */
         .status-select {
-            width: 100%;
+            width: 100%; min-width: 70px;
             border: 1px solid var(--input-border);
-            border-radius: 4px;
-            padding: 6px;
-            font-size: 12px;
-            font-weight: 600;
-            background: var(--input-bg);
-            color: var(--text-primary);
+            border-radius: 4px; padding: 5px 4px;
+            font-size: 12px; font-weight: 600;
+            background: var(--input-bg); color: var(--text-primary);
+            cursor: pointer; appearance: auto;
         }
-
-        .status-select.status-yes { background: #d8f5df; color: #1e7c3c; }
-        .status-select.status-no { background: #f9d6d6; color: #9e2d2d; }
+        .status-select.status-yes     { background: #d8f5df; color: #1e7c3c; }
+        .status-select.status-no      { background: #f9d6d6; color: #9e2d2d; }
         .status-select.status-pending { background: #fff3cd; color: #9a6a00; }
 
-        .comment-btn {
-            width: 100%;
-            padding: 8px;
+        input[type="text"], input[type="date"] {
+            width: 100%; padding: 6px;
             border: 1px solid var(--input-border);
             border-radius: 4px;
             background: var(--input-bg);
-            color: var(--text-secondary);
-            text-align: left;
-            cursor: pointer;
-            min-height: 36px;
-        }
-
-        .comment-btn.has-content {
             color: var(--text-primary);
-            font-weight: 500;
+            font-size: 12px;
         }
 
-        .comment-print {
-            display: none;
-            white-space: pre-wrap;
+        .date-cell { display: flex; flex-direction: column; gap: 4px; }
+
+        .same-above-btn {
+            padding: 3px 6px; border: 1px solid var(--border-color);
+            border-radius: 3px; background: var(--bg-secondary);
+            color: var(--text-secondary); cursor: pointer; font-size: 10px;
+        }
+
+        .comment-btn {
+            width: 100%; padding: 6px; border: 1px solid var(--input-border);
+            border-radius: 4px; background: var(--input-bg);
+            color: var(--text-secondary); text-align: left;
+            cursor: pointer; min-height: 32px; font-size: 11px;
             word-break: break-word;
         }
+        .comment-btn.has-content { color: var(--text-primary); font-weight: 500; }
 
+        .comment-print {
+            display: none; white-space: pre-wrap; word-break: break-word; font-size: 11px;
+        }
+
+        /* Modal */
         .modal-overlay {
-            position: fixed;
-            inset: 0;
-            background: rgba(0, 0, 0, 0.6);
-            display: none;
-            align-items: center;
-            justify-content: center;
-            z-index: 3000;
-            padding: 16px;
+            position: fixed; inset: 0; background: rgba(0,0,0,0.6);
+            display: none; align-items: center; justify-content: center;
+            z-index: 3000; padding: 16px;
         }
-
         .modal-overlay.open { display: flex; }
-
         .modal-card {
-            width: min(700px, 100%);
-            background: var(--bg-primary);
-            color: var(--text-primary);
-            border-radius: 8px;
-            padding: 16px;
+            width: min(680px, 100%); background: var(--bg-primary);
+            color: var(--text-primary); border-radius: 8px; padding: 16px;
         }
-
+        .modal-date-row {
+            display: flex; align-items: center; gap: 8px;
+            margin-top: 8px; margin-bottom: 4px;
+        }
+        .modal-date-row label { font-size: 12px; white-space: nowrap; }
+        .modal-date-row input { max-width: 160px; }
         .modal-card textarea {
-            min-height: 200px;
-            font-size: 15px;
-            margin-top: 10px;
+            min-height: 180px; font-size: 14px; margin-top: 6px;
+            width: 100%; padding: 8px; border: 1px solid var(--input-border);
+            border-radius: 4px; background: var(--input-bg); color: var(--text-primary);
+            resize: vertical; font-family: inherit;
         }
+        .modal-actions { display: flex; justify-content: flex-end; gap: 8px; margin-top: 10px; }
 
-        .modal-actions {
-            display: flex;
-            justify-content: flex-end;
-            gap: 8px;
-            margin-top: 10px;
-        }
-
+        /* Print */
         @media print {
-            .controls, .sheet-tabs, .same-above-btn, .comment-btn, .modal-overlay {
-                display: none !important;
-            }
-            .sticky-header { position: static; }
-            .status-select { border: none; background: transparent !important; }
-            .comment-print { display: block; min-height: 40px; }
+            .controls, .sheet-tabs, .same-above-btn, .comment-btn,
+            .modal-overlay, .save-buttons { display: none !important; }
+            .page-header { position: static; }
+            .comment-print { display: block; min-height: 30px; }
+            .status-select { border: none; background: transparent !important; -webkit-appearance: none; appearance: none; }
+            tr[data-cat="people"] { background-color: #ffd6d6 !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+            tr[data-cat="ops"]    { background-color: #ffe5cc !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+            tr[data-cat="cx"]     { background-color: #cce5ff !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+            tr[data-cat="cash"]   { background-color: #d4f5d4 !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+            tr[data-cat="finance"]{ background-color: #e8d4f5 !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+            tr[data-cat="fuel"]   { background-color: #fff0cc !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+            tr[data-cat="food"]   { background-color: #ffe0f0 !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+            tr[data-cat="systems"]{ background-color: #d4f0ff !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+            tr[data-cat="leadership"]{ background-color: #f0e8d4 !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+            tr[data-cat="default"]{ background-color: #e8f0e8 !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
         }
 
+        /* ====== MOBILE ====== */
         @media (max-width: 768px) {
             .container { padding: 8px; }
-            .controls { top: 10px; right: 10px; }
-            .header-title { font-size: 20px; }
-            table { font-size: 11px; table-layout: fixed; }
-            th, td { padding: 6px 3px; overflow-wrap: anywhere; }
+            .controls { top: 8px; right: 8px; }
+            .header-title { font-size: 17px; }
+            .header-inputs { grid-template-columns: 1fr 1fr; gap: 8px; }
             .save-buttons { justify-content: center; }
-            .save-btn { width: 100%; }
+            .save-btn { flex: 1; min-width: 0; font-size: 12px; padding: 8px 10px; }
+            .tab-btn { padding: 8px 14px; font-size: 13px; }
+            /* Mobile table: compact, no horizontal scroll needed */
+            table { min-width: 0; font-size: 11px; }
+            thead th, td { padding: 5px 4px; }
+            .status-select { min-width: 60px; font-size: 11px; padding: 3px 2px; }
+            .comment-btn { font-size: 10px; padding: 4px; min-height: 28px; }
             .same-above-btn { display: none; }
-            .header-inputs { grid-template-columns: 1fr; }
         }
 
         @media (max-width: 480px) {
-            .hide-mobile {
-                display: none;
-            }
+            .header-inputs { grid-template-columns: 1fr; }
+            /* On portrait phone, squeeze table to fit 6 columns */
+            table { table-layout: fixed; }
+            /* col widths for portrait: cat, task, status, ac, action, date */
+            col.col-cat   { width: 18%; }
+            col.col-task  { width: 26%; }
+            col.col-status{ width: 13%; }
+            col.col-ac    { width: 15%; }
+            col.col-action{ width: 17%; }
+            col.col-date  { width: 11%; }
+            td, th { overflow-wrap: anywhere; word-break: break-word; }
+            input[type="date"] { font-size: 10px; padding: 3px 2px; }
         }
     </style>
 </head>
@@ -548,12 +301,12 @@
     </div>
 
     <div class="container">
-        <div class="sticky-header">
+        <div class="page-header">
             <div class="header-title" id="sheetTitle">DPM CS Store Visit Checklist</div>
             <div class="header-inputs" id="headerInputs">
                 <div class="input-group">
-                    <label for="nameInput">Observer Name</label>
-                    <input type="text" id="nameInput" placeholder="Enter name">
+                    <label for="nameInput">Observer Name <span style="color:#ff6b6b">*</span></label>
+                    <input type="text" id="nameInput" placeholder="Enter name" required>
                 </div>
                 <div class="input-group">
                     <label for="dateInput">Date</label>
@@ -561,655 +314,630 @@
                 </div>
                 <div class="input-group">
                     <label for="siteInput">Site</label>
-                    <input type="text" id="siteInput" placeholder="Enter site">
+                    <select id="siteInput" style="padding:8px;border:1px solid rgba(255,255,255,0.3);border-radius:4px;background:rgba(255,255,255,0.15);color:#fff;font-size:14px;">
+                        <option value="" style="color:#333">— Select Site —</option>
+                        <option style="color:#333">7-Eleven #39787 Riverfront</option>
+                        <option style="color:#333">Burger King #10358 Nash</option>
+                        <option style="color:#333">Burger King #11460 Bonham</option>
+                        <option style="color:#333">Burger King #13192 Plano (Ohio)</option>
+                        <option style="color:#333">Burger King #20671 Greenville</option>
+                        <option style="color:#333">Burger King #22027 Alvord</option>
+                        <option style="color:#333">Burger King #23086 Atlanta</option>
+                        <option style="color:#333">Burger King #24008 New Boston</option>
+                        <option style="color:#333">Burger King #24875 Royse City</option>
+                        <option style="color:#333">Burger King #25198 Terrell</option>
+                        <option style="color:#333">Burger King #26015 Hooks</option>
+                        <option style="color:#333">Burger King #26183 Denton</option>
+                        <option style="color:#333">Burger King #26924 Corinth</option>
+                        <option style="color:#333">Burger King #27028 Gainesville</option>
+                        <option style="color:#333">Burger King #27082 Alliance/TMS</option>
+                        <option style="color:#333">Burger King #27083 Azle</option>
+                        <option style="color:#333">Burger King #27084 Saginaw</option>
+                        <option style="color:#333">Burger King #27415 Kaufman</option>
+                        <option style="color:#333">Burger King #27958 Quinlan</option>
+                        <option style="color:#333">Burger King #28174 Melissa</option>
+                        <option style="color:#333">Burger King #28312 Mesquite</option>
+                        <option style="color:#333">Burger King #28313 Cross Roads</option>
+                        <option style="color:#333">Burger King #28514 Midlothian</option>
+                        <option style="color:#333">Burger King #28626 Bailey Boswell</option>
+                        <option style="color:#333">Burger King #28683 Sunnyvale</option>
+                        <option style="color:#333">Burger King #2390 Paris</option>
+                        <option style="color:#333">Burger King #3675 Denton</option>
+                        <option style="color:#333">Burger King #4851 Plano (Coit)</option>
+                        <option style="color:#333">Burger King #6460 Mckinney</option>
+                        <option style="color:#333">Burger King #9723 The Colony</option>
+                        <option style="color:#333">Nashville Store</option>
+                        <option style="color:#333">Paradise Quick Stop #01</option>
+                        <option style="color:#333">Paradise Quick Stop #02 (Speed Max)</option>
+                        <option style="color:#333">Paradise Quick Stop #03</option>
+                        <option style="color:#333">Paradise Quick Stop #04 (Golden)</option>
+                        <option style="color:#333">Paradise Quick Stop #05</option>
+                        <option style="color:#333">Paradise Quick Stop #06 (RW1)</option>
+                        <option style="color:#333">Paradise Quick Stop #07</option>
+                        <option style="color:#333">Paradise Quick Stop #08</option>
+                        <option style="color:#333">Paradise Quick Stop #09</option>
+                        <option style="color:#333">Paradise Quick Stop #10</option>
+                        <option style="color:#333">Paradise Quick Stop #11</option>
+                        <option style="color:#333">Paradise Quick Stop #12</option>
+                        <option style="color:#333">Paradise Quick Stop #13</option>
+                        <option style="color:#333">Paradise Quick Stop #14</option>
+                        <option style="color:#333">Paradise Quick Stop #15</option>
+                        <option style="color:#333">Paradise Quick Stop #16</option>
+                        <option style="color:#333">Scarborough Car Wash</option>
+                        <option style="color:#333">Scarborough Travel Stop</option>
+                        <option style="color:#333">Subway #22411</option>
+                    </select>
                 </div>
                 <div class="input-group">
-                    <label for="managerOnDutyInput">Manager on Duty</label>
-                    <input type="text" id="managerOnDutyInput" placeholder="Enter manager on duty name">
+                    <label for="managerOnDutyInput">Manager on Duty <span style="color:#ff6b6b">*</span></label>
+                    <input type="text" id="managerOnDutyInput" placeholder="Enter manager name" required>
                 </div>
             </div>
         </div>
 
         <div class="sheet-tabs">
-            <button class="tab-btn active" data-sheet="cs">CS - Convenience Store</button>
-            <button class="tab-btn" data-sheet="ff">FF - Fast Food</button>
+            <button class="tab-btn active" data-sheet="cs">CS – Convenience Store</button>
+            <button class="tab-btn" data-sheet="ff">FF – Fast Food</button>
         </div>
 
         <div class="save-buttons">
-            <button class="save-btn" id="savePdfBtnTop">📄 Save as PDF (Send to Ops Team + Store Manager)</button>
+            <button class="save-btn" id="savePdfBtnTop">📄 Save PDF</button>
             <button class="save-btn" id="saveExcelBtn">📊 Save as Excel</button>
             <button class="save-btn" id="clearFormBtnTop">🧹 Clear Form</button>
         </div>
 
         <div class="checklist-container">
+            <!-- ===== CS SHEET ===== -->
             <div class="checklist-sheet active" id="cs-sheet">
+                <div class="table-wrap">
                 <table>
+                    <colgroup>
+                        <col class="col-cat">
+                        <col class="col-task">
+                        <col class="col-status">
+                        <col class="col-ac">
+                        <col class="col-action">
+                        <col class="col-date">
+                    </colgroup>
                     <thead>
                         <tr>
-                            <th style="width: 20%;">Category</th>
-                            <th style="width: 25%;">Tasks</th>
-                            <th style="width: 5%;">Yes</th>
-                            <th style="width: 5%;">No</th>
-                            <th style="width: 8%;">Pending</th>
-                            <th style="width: 15%;">AC Comments</th>
-                            <th style="width: 15%;">Action Items</th>
-                            <th style="width: 7%;" >Follow Up Date</th>
+                            <th style="width:18%">Category</th>
+                            <th style="width:28%">Tasks</th>
+                            <th style="width:10%">Status</th>
+                            <th style="width:16%">AC Comments</th>
+                            <th style="width:18%">Action Items</th>
+                            <th style="width:10%">Follow Up Date</th>
                         </tr>
                     </thead>
                     <tbody>
-                        <tr class="category-row">
-                            <td>People & Scheduling</td>
+                        <!-- People & Scheduling -->
+                        <tr class="category-row" data-cat="people" data-category="people">
+                            <td>People &amp; Scheduling</td>
                             <td class="task-cell">GM Schedule Reviewed</td>
-                            <td><div class="checkbox-group"><input type="radio" name="response_cs_0" value="yes" class="checkbox-yes"></div></td>
-                            <td><div class="checkbox-group"><input type="radio" name="response_cs_0" value="no" class="checkbox-no"></div></td>
-                            <td><div class="checkbox-group"><input type="radio" name="response_cs_0" value="pending" class="checkbox-pending"></div></td>
-                            <td><textarea rows="1"></textarea></td>
-                            <td><textarea rows="1"></textarea></td>
+                            <td><select class="status-select" onchange="styleStatus(this)"><option value="">—</option><option value="yes">Yes</option><option value="no">No</option><option value="pending">Pending</option></select></td>
+                            <td><textarea rows="1" style="display:none"></textarea></td>
+                            <td><textarea rows="1" style="display:none"></textarea></td>
                             <td><div class="date-cell"><input type="date" class="follow-up-date"></div></td>
                         </tr>
-                        <tr>
+                        <tr data-cat="people" data-category="people">
                             <td></td>
                             <td class="task-cell">Employee Schedules Reviewed</td>
-                            <td><div class="checkbox-group"><input type="radio" name="response_cs_1" value="yes" class="checkbox-yes"></div></td>
-                            <td><div class="checkbox-group"><input type="radio" name="response_cs_1" value="no" class="checkbox-no"></div></td>
-                            <td><div class="checkbox-group"><input type="radio" name="response_cs_1" value="pending" class="checkbox-pending"></div></td>
-                            <td><textarea rows="1"></textarea></td>
-                            <td><textarea rows="1"></textarea></td>
+                            <td><select class="status-select" onchange="styleStatus(this)"><option value="">—</option><option value="yes">Yes</option><option value="no">No</option><option value="pending">Pending</option></select></td>
+                            <td><textarea rows="1" style="display:none"></textarea></td>
+                            <td><textarea rows="1" style="display:none"></textarea></td>
                             <td><div class="date-cell"><input type="date" class="follow-up-date"><button class="same-above-btn" onclick="copyDateAbove(this)">Same as above</button></div></td>
                         </tr>
-                        <tr>
+                        <tr data-cat="people" data-category="people">
                             <td></td>
                             <td class="task-cell">Employee Turnover Ratios Reviewed</td>
-                            <td><div class="checkbox-group"><input type="radio" name="response_cs_2" value="yes" class="checkbox-yes"></div></td>
-                            <td><div class="checkbox-group"><input type="radio" name="response_cs_2" value="no" class="checkbox-no"></div></td>
-                            <td><div class="checkbox-group"><input type="radio" name="response_cs_2" value="pending" class="checkbox-pending"></div></td>
-                            <td><textarea rows="1"></textarea></td>
-                            <td><textarea rows="1"></textarea></td>
+                            <td><select class="status-select" onchange="styleStatus(this)"><option value="">—</option><option value="yes">Yes</option><option value="no">No</option><option value="pending">Pending</option></select></td>
+                            <td><textarea rows="1" style="display:none"></textarea></td>
+                            <td><textarea rows="1" style="display:none"></textarea></td>
                             <td><div class="date-cell"><input type="date" class="follow-up-date"><button class="same-above-btn" onclick="copyDateAbove(this)">Same as above</button></div></td>
                         </tr>
-                        <tr class="category-row">
-                            <td>Operations & Standards</td>
+                        <!-- Operations & Standards -->
+                        <tr class="category-row" data-cat="ops" data-category="ops">
+                            <td>Operations &amp; Standards</td>
                             <td class="task-cell">Exterior Cleanliness</td>
-                            <td><div class="checkbox-group"><input type="radio" name="response_cs_3" value="yes" class="checkbox-yes"></div></td>
-                            <td><div class="checkbox-group"><input type="radio" name="response_cs_3" value="no" class="checkbox-no"></div></td>
-                            <td><div class="checkbox-group"><input type="radio" name="response_cs_3" value="pending" class="checkbox-pending"></div></td>
-                            <td><textarea rows="1"></textarea></td>
-                            <td><textarea rows="1"></textarea></td>
+                            <td><select class="status-select" onchange="styleStatus(this)"><option value="">—</option><option value="yes">Yes</option><option value="no">No</option><option value="pending">Pending</option></select></td>
+                            <td><textarea rows="1" style="display:none"></textarea></td>
+                            <td><textarea rows="1" style="display:none"></textarea></td>
                             <td><div class="date-cell"><input type="date" class="follow-up-date"><button class="same-above-btn" onclick="copyDateAbove(this)">Same as above</button></div></td>
                         </tr>
-                        <tr>
+                        <tr data-cat="ops" data-category="ops">
                             <td></td>
                             <td class="task-cell">Interior Cleanliness</td>
-                            <td><div class="checkbox-group"><input type="radio" name="response_cs_4" value="yes" class="checkbox-yes"></div></td>
-                            <td><div class="checkbox-group"><input type="radio" name="response_cs_4" value="no" class="checkbox-no"></div></td>
-                            <td><div class="checkbox-group"><input type="radio" name="response_cs_4" value="pending" class="checkbox-pending"></div></td>
-                            <td><textarea rows="1"></textarea></td>
-                            <td><textarea rows="1"></textarea></td>
+                            <td><select class="status-select" onchange="styleStatus(this)"><option value="">—</option><option value="yes">Yes</option><option value="no">No</option><option value="pending">Pending</option></select></td>
+                            <td><textarea rows="1" style="display:none"></textarea></td>
+                            <td><textarea rows="1" style="display:none"></textarea></td>
                             <td><div class="date-cell"><input type="date" class="follow-up-date"><button class="same-above-btn" onclick="copyDateAbove(this)">Same as above</button></div></td>
                         </tr>
-                        <tr>
+                        <tr data-cat="ops" data-category="ops">
                             <td></td>
                             <td class="task-cell">Fuel Area Cleanliness</td>
-                            <td><div class="checkbox-group"><input type="radio" name="response_cs_5" value="yes" class="checkbox-yes"></div></td>
-                            <td><div class="checkbox-group"><input type="radio" name="response_cs_5" value="no" class="checkbox-no"></div></td>
-                            <td><div class="checkbox-group"><input type="radio" name="response_cs_5" value="pending" class="checkbox-pending"></div></td>
-                            <td><textarea rows="1"></textarea></td>
-                            <td><textarea rows="1"></textarea></td>
+                            <td><select class="status-select" onchange="styleStatus(this)"><option value="">—</option><option value="yes">Yes</option><option value="no">No</option><option value="pending">Pending</option></select></td>
+                            <td><textarea rows="1" style="display:none"></textarea></td>
+                            <td><textarea rows="1" style="display:none"></textarea></td>
                             <td><div class="date-cell"><input type="date" class="follow-up-date"><button class="same-above-btn" onclick="copyDateAbove(this)">Same as above</button></div></td>
                         </tr>
-                        <tr>
+                        <tr data-cat="ops" data-category="ops">
                             <td></td>
                             <td class="task-cell">Pump Maintenance and Cleanliness</td>
-                            <td><div class="checkbox-group"><input type="radio" name="response_cs_6" value="yes" class="checkbox-yes"></div></td>
-                            <td><div class="checkbox-group"><input type="radio" name="response_cs_6" value="no" class="checkbox-no"></div></td>
-                            <td><div class="checkbox-group"><input type="radio" name="response_cs_6" value="pending" class="checkbox-pending"></div></td>
-                            <td><textarea rows="1"></textarea></td>
-                            <td><textarea rows="1"></textarea></td>
+                            <td><select class="status-select" onchange="styleStatus(this)"><option value="">—</option><option value="yes">Yes</option><option value="no">No</option><option value="pending">Pending</option></select></td>
+                            <td><textarea rows="1" style="display:none"></textarea></td>
+                            <td><textarea rows="1" style="display:none"></textarea></td>
                             <td><div class="date-cell"><input type="date" class="follow-up-date"><button class="same-above-btn" onclick="copyDateAbove(this)">Same as above</button></div></td>
                         </tr>
-                        <tr>
+                        <tr data-cat="ops" data-category="ops">
                             <td></td>
                             <td class="task-cell">Uniform Policy Compliance</td>
-                            <td><div class="checkbox-group"><input type="radio" name="response_cs_7" value="yes" class="checkbox-yes"></div></td>
-                            <td><div class="checkbox-group"><input type="radio" name="response_cs_7" value="no" class="checkbox-no"></div></td>
-                            <td><div class="checkbox-group"><input type="radio" name="response_cs_7" value="pending" class="checkbox-pending"></div></td>
-                            <td><textarea rows="1"></textarea></td>
-                            <td><textarea rows="1"></textarea></td>
+                            <td><select class="status-select" onchange="styleStatus(this)"><option value="">—</option><option value="yes">Yes</option><option value="no">No</option><option value="pending">Pending</option></select></td>
+                            <td><textarea rows="1" style="display:none"></textarea></td>
+                            <td><textarea rows="1" style="display:none"></textarea></td>
                             <td><div class="date-cell"><input type="date" class="follow-up-date"><button class="same-above-btn" onclick="copyDateAbove(this)">Same as above</button></div></td>
                         </tr>
-                        <tr>
+                        <tr data-cat="ops" data-category="ops">
                             <td></td>
                             <td class="task-cell">Store Shift Walk Completed</td>
-                            <td><div class="checkbox-group"><input type="radio" name="response_cs_8" value="yes" class="checkbox-yes"></div></td>
-                            <td><div class="checkbox-group"><input type="radio" name="response_cs_8" value="no" class="checkbox-no"></div></td>
-                            <td><div class="checkbox-group"><input type="radio" name="response_cs_8" value="pending" class="checkbox-pending"></div></td>
-                            <td><textarea rows="1"></textarea></td>
-                            <td><textarea rows="1"></textarea></td>
+                            <td><select class="status-select" onchange="styleStatus(this)"><option value="">—</option><option value="yes">Yes</option><option value="no">No</option><option value="pending">Pending</option></select></td>
+                            <td><textarea rows="1" style="display:none"></textarea></td>
+                            <td><textarea rows="1" style="display:none"></textarea></td>
                             <td><div class="date-cell"><input type="date" class="follow-up-date"><button class="same-above-btn" onclick="copyDateAbove(this)">Same as above</button></div></td>
                         </tr>
-                        <tr>
+                        <tr data-cat="ops" data-category="ops">
                             <td></td>
-                            <td class="task-cell">Restrooms Clean & Logs Complete</td>
-                            <td><div class="checkbox-group"><input type="radio" name="response_cs_9" value="yes" class="checkbox-yes"></div></td>
-                            <td><div class="checkbox-group"><input type="radio" name="response_cs_9" value="no" class="checkbox-no"></div></td>
-                            <td><div class="checkbox-group"><input type="radio" name="response_cs_9" value="pending" class="checkbox-pending"></div></td>
-                            <td><textarea rows="1"></textarea></td>
-                            <td><textarea rows="1"></textarea></td>
+                            <td class="task-cell">Restrooms Clean &amp; Logs Complete</td>
+                            <td><select class="status-select" onchange="styleStatus(this)"><option value="">—</option><option value="yes">Yes</option><option value="no">No</option><option value="pending">Pending</option></select></td>
+                            <td><textarea rows="1" style="display:none"></textarea></td>
+                            <td><textarea rows="1" style="display:none"></textarea></td>
                             <td><div class="date-cell"><input type="date" class="follow-up-date"><button class="same-above-btn" onclick="copyDateAbove(this)">Same as above</button></div></td>
                         </tr>
-                        <tr class="category-row">
+                        <!-- Customer Experience -->
+                        <tr class="category-row" data-cat="cx" data-category="cx">
                             <td>Customer Experience</td>
-                            <td class="task-cell">Customer Service Observation (“Welcome to Paradise”)</td>
-                            <td><div class="checkbox-group"><input type="radio" name="response_cs_10" value="yes" class="checkbox-yes"></div></td>
-                            <td><div class="checkbox-group"><input type="radio" name="response_cs_10" value="no" class="checkbox-no"></div></td>
-                            <td><div class="checkbox-group"><input type="radio" name="response_cs_10" value="pending" class="checkbox-pending"></div></td>
-                            <td><textarea rows="1"></textarea></td>
-                            <td><textarea rows="1"></textarea></td>
+                            <td class="task-cell">Customer Service Observation ("Welcome to Paradise")</td>
+                            <td><select class="status-select" onchange="styleStatus(this)"><option value="">—</option><option value="yes">Yes</option><option value="no">No</option><option value="pending">Pending</option></select></td>
+                            <td><textarea rows="1" style="display:none"></textarea></td>
+                            <td><textarea rows="1" style="display:none"></textarea></td>
                             <td><div class="date-cell"><input type="date" class="follow-up-date"><button class="same-above-btn" onclick="copyDateAbove(this)">Same as above</button></div></td>
                         </tr>
-                        <tr>
+                        <tr data-cat="cx" data-category="cx">
                             <td></td>
                             <td class="task-cell">Upselling Observed</td>
-                            <td><div class="checkbox-group"><input type="radio" name="response_cs_11" value="yes" class="checkbox-yes"></div></td>
-                            <td><div class="checkbox-group"><input type="radio" name="response_cs_11" value="no" class="checkbox-no"></div></td>
-                            <td><div class="checkbox-group"><input type="radio" name="response_cs_11" value="pending" class="checkbox-pending"></div></td>
-                            <td><textarea rows="1"></textarea></td>
-                            <td><textarea rows="1"></textarea></td>
+                            <td><select class="status-select" onchange="styleStatus(this)"><option value="">—</option><option value="yes">Yes</option><option value="no">No</option><option value="pending">Pending</option></select></td>
+                            <td><textarea rows="1" style="display:none"></textarea></td>
+                            <td><textarea rows="1" style="display:none"></textarea></td>
                             <td><div class="date-cell"><input type="date" class="follow-up-date"><button class="same-above-btn" onclick="copyDateAbove(this)">Same as above</button></div></td>
                         </tr>
-                        <tr>
+                        <tr data-cat="cx" data-category="cx">
                             <td></td>
                             <td class="task-cell">Table Touches Observed</td>
-                            <td><div class="checkbox-group"><input type="radio" name="response_cs_11" value="yes" class="checkbox-yes"></div></td>
-                            <td><div class="checkbox-group"><input type="radio" name="response_cs_11" value="no" class="checkbox-no"></div></td>
-                            <td><div class="checkbox-group"><input type="radio" name="response_cs_11" value="pending" class="checkbox-pending"></div></td>
-                            <td><textarea rows="1"></textarea></td>
-                            <td><textarea rows="1"></textarea></td>
+                            <td><select class="status-select" onchange="styleStatus(this)"><option value="">—</option><option value="yes">Yes</option><option value="no">No</option><option value="pending">Pending</option></select></td>
+                            <td><textarea rows="1" style="display:none"></textarea></td>
+                            <td><textarea rows="1" style="display:none"></textarea></td>
                             <td><div class="date-cell"><input type="date" class="follow-up-date"><button class="same-above-btn" onclick="copyDateAbove(this)">Same as above</button></div></td>
                         </tr>
-                        <tr>
+                        <tr data-cat="cx" data-category="cx">
                             <td></td>
                             <td class="task-cell">Shift Huddle Meetings Observed</td>
-                            <td><div class="checkbox-group"><input type="radio" name="response_cs_11" value="yes" class="checkbox-yes"></div></td>
-                            <td><div class="checkbox-group"><input type="radio" name="response_cs_11" value="no" class="checkbox-no"></div></td>
-                            <td><div class="checkbox-group"><input type="radio" name="response_cs_11" value="pending" class="checkbox-pending"></div></td>
-                            <td><textarea rows="1"></textarea></td>
-                            <td><textarea rows="1"></textarea></td>
+                            <td><select class="status-select" onchange="styleStatus(this)"><option value="">—</option><option value="yes">Yes</option><option value="no">No</option><option value="pending">Pending</option></select></td>
+                            <td><textarea rows="1" style="display:none"></textarea></td>
+                            <td><textarea rows="1" style="display:none"></textarea></td>
                             <td><div class="date-cell"><input type="date" class="follow-up-date"><button class="same-above-btn" onclick="copyDateAbove(this)">Same as above</button></div></td>
                         </tr>
-                        <tr class="category-row">
-                            <td>Cash & Controls</td>
+                        <!-- Cash & Controls -->
+                        <tr class="category-row" data-cat="cash" data-category="cash">
+                            <td>Cash &amp; Controls</td>
                             <td class="task-cell">Petty Cash Count Matches</td>
-                            <td><div class="checkbox-group"><input type="radio" name="response_cs_12" value="yes" class="checkbox-yes"></div></td>
-                            <td><div class="checkbox-group"><input type="radio" name="response_cs_12" value="no" class="checkbox-no"></div></td>
-                            <td><div class="checkbox-group"><input type="radio" name="response_cs_12" value="pending" class="checkbox-pending"></div></td>
-                            <td><textarea rows="1"></textarea></td>
-                            <td><textarea rows="1"></textarea></td>
+                            <td><select class="status-select" onchange="styleStatus(this)"><option value="">—</option><option value="yes">Yes</option><option value="no">No</option><option value="pending">Pending</option></select></td>
+                            <td><textarea rows="1" style="display:none"></textarea></td>
+                            <td><textarea rows="1" style="display:none"></textarea></td>
                             <td><div class="date-cell"><input type="date" class="follow-up-date"><button class="same-above-btn" onclick="copyDateAbove(this)">Same as above</button></div></td>
                         </tr>
-                        <tr>
+                        <tr data-cat="cash" data-category="cash">
                             <td></td>
                             <td class="task-cell">Safe Drops Observed and Matching Totals</td>
-                            <td><div class="checkbox-group"><input type="radio" name="response_cs_13" value="yes" class="checkbox-yes"></div></td>
-                            <td><div class="checkbox-group"><input type="radio" name="response_cs_13" value="no" class="checkbox-no"></div></td>
-                            <td><div class="checkbox-group"><input type="radio" name="response_cs_13" value="pending" class="checkbox-pending"></div></td>
-                            <td><textarea rows="1"></textarea></td>
-                            <td><textarea rows="1"></textarea></td>
+                            <td><select class="status-select" onchange="styleStatus(this)"><option value="">—</option><option value="yes">Yes</option><option value="no">No</option><option value="pending">Pending</option></select></td>
+                            <td><textarea rows="1" style="display:none"></textarea></td>
+                            <td><textarea rows="1" style="display:none"></textarea></td>
                             <td><div class="date-cell"><input type="date" class="follow-up-date"><button class="same-above-btn" onclick="copyDateAbove(this)">Same as above</button></div></td>
                         </tr>
-                        <tr>
+                        <tr data-cat="cash" data-category="cash">
                             <td></td>
                             <td class="task-cell">Cash Over / Short Reviewed</td>
-                            <td><div class="checkbox-group"><input type="radio" name="response_cs_14" value="yes" class="checkbox-yes"></div></td>
-                            <td><div class="checkbox-group"><input type="radio" name="response_cs_14" value="no" class="checkbox-no"></div></td>
-                            <td><div class="checkbox-group"><input type="radio" name="response_cs_14" value="pending" class="checkbox-pending"></div></td>
-                            <td><textarea rows="1"></textarea></td>
-                            <td><textarea rows="1"></textarea></td>
+                            <td><select class="status-select" onchange="styleStatus(this)"><option value="">—</option><option value="yes">Yes</option><option value="no">No</option><option value="pending">Pending</option></select></td>
+                            <td><textarea rows="1" style="display:none"></textarea></td>
+                            <td><textarea rows="1" style="display:none"></textarea></td>
                             <td><div class="date-cell"><input type="date" class="follow-up-date"><button class="same-above-btn" onclick="copyDateAbove(this)">Same as above</button></div></td>
                         </tr>
-                        <tr>
+                        <tr data-cat="cash" data-category="cash">
                             <td></td>
                             <td class="task-cell">Refunds / Deletes / Voids / Manager Meals Reviewed</td>
-                            <td><div class="checkbox-group"><input type="radio" name="response_cs_15" value="yes" class="checkbox-yes"></div></td>
-                            <td><div class="checkbox-group"><input type="radio" name="response_cs_15" value="no" class="checkbox-no"></div></td>
-                            <td><div class="checkbox-group"><input type="radio" name="response_cs_15" value="pending" class="checkbox-pending"></div></td>
-                            <td><textarea rows="1"></textarea></td>
-                            <td><textarea rows="1"></textarea></td>
+                            <td><select class="status-select" onchange="styleStatus(this)"><option value="">—</option><option value="yes">Yes</option><option value="no">No</option><option value="pending">Pending</option></select></td>
+                            <td><textarea rows="1" style="display:none"></textarea></td>
+                            <td><textarea rows="1" style="display:none"></textarea></td>
                             <td><div class="date-cell"><input type="date" class="follow-up-date"><button class="same-above-btn" onclick="copyDateAbove(this)">Same as above</button></div></td>
                         </tr>
-                        <tr>
+                        <tr data-cat="cash" data-category="cash">
                             <td></td>
-                            <td class="task-cell">All Cash Paid-Outs Match Invoices & Daily Paperwork</td>
-                            <td><div class="checkbox-group"><input type="radio" name="response_cs_16" value="yes" class="checkbox-yes"></div></td>
-                            <td><div class="checkbox-group"><input type="radio" name="response_cs_16" value="no" class="checkbox-no"></div></td>
-                            <td><div class="checkbox-group"><input type="radio" name="response_cs_16" value="pending" class="checkbox-pending"></div></td>
-                            <td><textarea rows="1"></textarea></td>
-                            <td><textarea rows="1"></textarea></td>
+                            <td class="task-cell">All Cash Paid-Outs Match Invoices &amp; Daily Paperwork</td>
+                            <td><select class="status-select" onchange="styleStatus(this)"><option value="">—</option><option value="yes">Yes</option><option value="no">No</option><option value="pending">Pending</option></select></td>
+                            <td><textarea rows="1" style="display:none"></textarea></td>
+                            <td><textarea rows="1" style="display:none"></textarea></td>
                             <td><div class="date-cell"><input type="date" class="follow-up-date"><button class="same-above-btn" onclick="copyDateAbove(this)">Same as above</button></div></td>
                         </tr>
-                        <tr class="category-row">
+                        <!-- Financial Performance -->
+                        <tr class="category-row" data-cat="finance" data-category="finance">
                             <td>Financial Performance</td>
                             <td class="task-cell">Inside Sales vs Plan Reviewed</td>
-                            <td><div class="checkbox-group"><input type="radio" name="response_cs_17" value="yes" class="checkbox-yes"></div></td>
-                            <td><div class="checkbox-group"><input type="radio" name="response_cs_17" value="no" class="checkbox-no"></div></td>
-                            <td><div class="checkbox-group"><input type="radio" name="response_cs_17" value="pending" class="checkbox-pending"></div></td>
-                            <td><textarea rows="1"></textarea></td>
-                            <td><textarea rows="1"></textarea></td>
+                            <td><select class="status-select" onchange="styleStatus(this)"><option value="">—</option><option value="yes">Yes</option><option value="no">No</option><option value="pending">Pending</option></select></td>
+                            <td><textarea rows="1" style="display:none"></textarea></td>
+                            <td><textarea rows="1" style="display:none"></textarea></td>
                             <td><div class="date-cell"><input type="date" class="follow-up-date"><button class="same-above-btn" onclick="copyDateAbove(this)">Same as above</button></div></td>
                         </tr>
-                        <tr>
+                        <tr data-cat="finance" data-category="finance">
                             <td></td>
                             <td class="task-cell">Fuel Gallons Sales vs Plan Reviewed</td>
-                            <td><div class="checkbox-group"><input type="radio" name="response_cs_18" value="yes" class="checkbox-yes"></div></td>
-                            <td><div class="checkbox-group"><input type="radio" name="response_cs_18" value="no" class="checkbox-no"></div></td>
-                            <td><div class="checkbox-group"><input type="radio" name="response_cs_18" value="pending" class="checkbox-pending"></div></td>
-                            <td><textarea rows="1"></textarea></td>
-                            <td><textarea rows="1"></textarea></td>
+                            <td><select class="status-select" onchange="styleStatus(this)"><option value="">—</option><option value="yes">Yes</option><option value="no">No</option><option value="pending">Pending</option></select></td>
+                            <td><textarea rows="1" style="display:none"></textarea></td>
+                            <td><textarea rows="1" style="display:none"></textarea></td>
                             <td><div class="date-cell"><input type="date" class="follow-up-date"><button class="same-above-btn" onclick="copyDateAbove(this)">Same as above</button></div></td>
                         </tr>
-                        <tr class="category-row">
-                            <td>Fuel & Compliance</td>
-                            <td class="task-cell">ATG Fuel Reading Printed & Entered in CSPro</td>
-                            <td><div class="checkbox-group"><input type="radio" name="response_cs_19" value="yes" class="checkbox-yes"></div></td>
-                            <td><div class="checkbox-group"><input type="radio" name="response_cs_19" value="no" class="checkbox-no"></div></td>
-                            <td><div class="checkbox-group"><input type="radio" name="response_cs_19" value="pending" class="checkbox-pending"></div></td>
-                            <td><textarea rows="1"></textarea></td>
-                            <td><textarea rows="1"></textarea></td>
+                        <!-- Fuel & Compliance -->
+                        <tr class="category-row" data-cat="fuel" data-category="fuel">
+                            <td>Fuel &amp; Compliance</td>
+                            <td class="task-cell">ATG Fuel Reading Printed &amp; Entered in CSPro</td>
+                            <td><select class="status-select" onchange="styleStatus(this)"><option value="">—</option><option value="yes">Yes</option><option value="no">No</option><option value="pending">Pending</option></select></td>
+                            <td><textarea rows="1" style="display:none"></textarea></td>
+                            <td><textarea rows="1" style="display:none"></textarea></td>
                             <td><div class="date-cell"><input type="date" class="follow-up-date"><button class="same-above-btn" onclick="copyDateAbove(this)">Same as above</button></div></td>
                         </tr>
-                        <tr>
+                        <tr data-cat="fuel" data-category="fuel">
                             <td></td>
-                            <td class="task-cell">Leak Test Printed & Uploaded in Bitrix</td>
-                            <td><div class="checkbox-group"><input type="radio" name="response_cs_20" value="yes" class="checkbox-yes"></div></td>
-                            <td><div class="checkbox-group"><input type="radio" name="response_cs_20" value="no" class="checkbox-no"></div></td>
-                            <td><div class="checkbox-group"><input type="radio" name="response_cs_20" value="pending" class="checkbox-pending"></div></td>
-                            <td><textarea rows="1"></textarea></td>
-                            <td><textarea rows="1"></textarea></td>
+                            <td class="task-cell">Leak Test Printed &amp; Uploaded in Bitrix</td>
+                            <td><select class="status-select" onchange="styleStatus(this)"><option value="">—</option><option value="yes">Yes</option><option value="no">No</option><option value="pending">Pending</option></select></td>
+                            <td><textarea rows="1" style="display:none"></textarea></td>
+                            <td><textarea rows="1" style="display:none"></textarea></td>
                             <td><div class="date-cell"><input type="date" class="follow-up-date"><button class="same-above-btn" onclick="copyDateAbove(this)">Same as above</button></div></td>
                         </tr>
-                        <tr>
+                        <tr data-cat="fuel" data-category="fuel">
                             <td></td>
                             <td class="task-cell">Daily Fuel Prices Email Sent</td>
-                            <td><div class="checkbox-group"><input type="radio" name="response_cs_21" value="yes" class="checkbox-yes"></div></td>
-                            <td><div class="checkbox-group"><input type="radio" name="response_cs_21" value="no" class="checkbox-no"></div></td>
-                            <td><div class="checkbox-group"><input type="radio" name="response_cs_21" value="pending" class="checkbox-pending"></div></td>
-                            <td><textarea rows="1"></textarea></td>
-                            <td><textarea rows="1"></textarea></td>
+                            <td><select class="status-select" onchange="styleStatus(this)"><option value="">—</option><option value="yes">Yes</option><option value="no">No</option><option value="pending">Pending</option></select></td>
+                            <td><textarea rows="1" style="display:none"></textarea></td>
+                            <td><textarea rows="1" style="display:none"></textarea></td>
                             <td><div class="date-cell"><input type="date" class="follow-up-date"><button class="same-above-btn" onclick="copyDateAbove(this)">Same as above</button></div></td>
                         </tr>
-                        <tr class="category-row">
-                            <td>Accounts & Audit</td>
+                        <!-- Accounts & Audit -->
+                        <tr class="category-row" data-cat="leadership" data-category="leadership">
+                            <td>Accounts &amp; Audit</td>
                             <td class="task-cell">Charge Customer Deposits Verified</td>
-                            <td><div class="checkbox-group"><input type="radio" name="response_cs_22" value="yes" class="checkbox-yes"></div></td>
-                            <td><div class="checkbox-group"><input type="radio" name="response_cs_22" value="no" class="checkbox-no"></div></td>
-                            <td><div class="checkbox-group"><input type="radio" name="response_cs_22" value="pending" class="checkbox-pending"></div></td>
-                            <td><textarea rows="1"></textarea></td>
-                            <td><textarea rows="1"></textarea></td>
+                            <td><select class="status-select" onchange="styleStatus(this)"><option value="">—</option><option value="yes">Yes</option><option value="no">No</option><option value="pending">Pending</option></select></td>
+                            <td><textarea rows="1" style="display:none"></textarea></td>
+                            <td><textarea rows="1" style="display:none"></textarea></td>
                             <td><div class="date-cell"><input type="date" class="follow-up-date"><button class="same-above-btn" onclick="copyDateAbove(this)">Same as above</button></div></td>
                         </tr>
-                        <tr>
+                        <tr data-cat="leadership" data-category="leadership">
                             <td></td>
-                            <td class="task-cell">Audit Charge Customer Sales & Collections (CSPro)</td>
-                            <td><div class="checkbox-group"><input type="radio" name="response_cs_23" value="yes" class="checkbox-yes"></div></td>
-                            <td><div class="checkbox-group"><input type="radio" name="response_cs_23" value="no" class="checkbox-no"></div></td>
-                            <td><div class="checkbox-group"><input type="radio" name="response_cs_23" value="pending" class="checkbox-pending"></div></td>
-                            <td><textarea rows="1"></textarea></td>
-                            <td><textarea rows="1"></textarea></td>
+                            <td class="task-cell">Audit Charge Customer Sales &amp; Collections (CSPro)</td>
+                            <td><select class="status-select" onchange="styleStatus(this)"><option value="">—</option><option value="yes">Yes</option><option value="no">No</option><option value="pending">Pending</option></select></td>
+                            <td><textarea rows="1" style="display:none"></textarea></td>
+                            <td><textarea rows="1" style="display:none"></textarea></td>
                             <td><div class="date-cell"><input type="date" class="follow-up-date"><button class="same-above-btn" onclick="copyDateAbove(this)">Same as above</button></div></td>
                         </tr>
                     </tbody>
                 </table>
+                </div>
             </div>
 
+            <!-- ===== FF SHEET ===== -->
             <div class="checklist-sheet" id="ff-sheet">
+                <div class="table-wrap">
                 <table>
+                    <colgroup>
+                        <col class="col-cat">
+                        <col class="col-task">
+                        <col class="col-status">
+                        <col class="col-ac">
+                        <col class="col-action">
+                        <col class="col-date">
+                    </colgroup>
                     <thead>
                         <tr>
-                            <th style="width: 20%;">Category</th>
-                            <th style="width: 25%;">Tasks</th>
-                            <th style="width: 5%;">Yes</th>
-                            <th style="width: 5%;">No</th>
-                            <th style="width: 8%;">Pending</th>
-                            <th style="width: 15%;">AC Comments</th>
-                            <th style="width: 15%;">Action Items</th>
-                            <th style="width: 7%;" >Follow Up Date</th>
+                            <th style="width:18%">Category</th>
+                            <th style="width:28%">Tasks</th>
+                            <th style="width:10%">Status</th>
+                            <th style="width:16%">AC Comments</th>
+                            <th style="width:18%">Action Items</th>
+                            <th style="width:10%">Follow Up Date</th>
                         </tr>
                     </thead>
                     <tbody>
-                        <tr class="category-row">
-                            <td>People & Scheduling</td>
+                        <!-- People & Scheduling -->
+                        <tr class="category-row" data-cat="people" data-category="people">
+                            <td>People &amp; Scheduling</td>
                             <td class="task-cell">GM Schedule Reviewed</td>
-                            <td><div class="checkbox-group"><input type="radio" name="response_ff_0" value="yes" class="checkbox-yes"></div></td>
-                            <td><div class="checkbox-group"><input type="radio" name="response_ff_0" value="no" class="checkbox-no"></div></td>
-                            <td><div class="checkbox-group"><input type="radio" name="response_ff_0" value="pending" class="checkbox-pending"></div></td>
-                            <td><textarea rows="1"></textarea></td>
-                            <td><textarea rows="1"></textarea></td>
+                            <td><select class="status-select" onchange="styleStatus(this)"><option value="">—</option><option value="yes">Yes</option><option value="no">No</option><option value="pending">Pending</option></select></td>
+                            <td><textarea rows="1" style="display:none"></textarea></td>
+                            <td><textarea rows="1" style="display:none"></textarea></td>
                             <td><div class="date-cell"><input type="date" class="follow-up-date"></div></td>
                         </tr>
-                        <tr>
+                        <tr data-cat="people" data-category="people">
                             <td></td>
                             <td class="task-cell">Employee Schedules Reviewed</td>
-                            <td><div class="checkbox-group"><input type="radio" name="response_ff_1" value="yes" class="checkbox-yes"></div></td>
-                            <td><div class="checkbox-group"><input type="radio" name="response_ff_1" value="no" class="checkbox-no"></div></td>
-                            <td><div class="checkbox-group"><input type="radio" name="response_ff_1" value="pending" class="checkbox-pending"></div></td>
-                            <td><textarea rows="1"></textarea></td>
-                            <td><textarea rows="1"></textarea></td>
+                            <td><select class="status-select" onchange="styleStatus(this)"><option value="">—</option><option value="yes">Yes</option><option value="no">No</option><option value="pending">Pending</option></select></td>
+                            <td><textarea rows="1" style="display:none"></textarea></td>
+                            <td><textarea rows="1" style="display:none"></textarea></td>
                             <td><div class="date-cell"><input type="date" class="follow-up-date"><button class="same-above-btn" onclick="copyDateAbove(this)">Same as above</button></div></td>
                         </tr>
-                        <tr>
+                        <tr data-cat="people" data-category="people">
                             <td></td>
                             <td class="task-cell">Employee Turnover Ratios Reviewed</td>
-                            <td><div class="checkbox-group"><input type="radio" name="response_ff_2" value="yes" class="checkbox-yes"></div></td>
-                            <td><div class="checkbox-group"><input type="radio" name="response_ff_2" value="no" class="checkbox-no"></div></td>
-                            <td><div class="checkbox-group"><input type="radio" name="response_ff_2" value="pending" class="checkbox-pending"></div></td>
-                            <td><textarea rows="1"></textarea></td>
-                            <td><textarea rows="1"></textarea></td>
+                            <td><select class="status-select" onchange="styleStatus(this)"><option value="">—</option><option value="yes">Yes</option><option value="no">No</option><option value="pending">Pending</option></select></td>
+                            <td><textarea rows="1" style="display:none"></textarea></td>
+                            <td><textarea rows="1" style="display:none"></textarea></td>
                             <td><div class="date-cell"><input type="date" class="follow-up-date"><button class="same-above-btn" onclick="copyDateAbove(this)">Same as above</button></div></td>
                         </tr>
-                        <tr class="category-row">
-                            <td>Cleanliness & Operations Standards</td>
+                        <!-- Cleanliness & Operations Standards -->
+                        <tr class="category-row" data-cat="ops" data-category="ops">
+                            <td>Cleanliness &amp; Operations Standards</td>
                             <td class="task-cell">Exterior Cleanliness</td>
-                            <td><div class="checkbox-group"><input type="radio" name="response_ff_3" value="yes" class="checkbox-yes"></div></td>
-                            <td><div class="checkbox-group"><input type="radio" name="response_ff_3" value="no" class="checkbox-no"></div></td>
-                            <td><div class="checkbox-group"><input type="radio" name="response_ff_3" value="pending" class="checkbox-pending"></div></td>
-                            <td><textarea rows="1"></textarea></td>
-                            <td><textarea rows="1"></textarea></td>
+                            <td><select class="status-select" onchange="styleStatus(this)"><option value="">—</option><option value="yes">Yes</option><option value="no">No</option><option value="pending">Pending</option></select></td>
+                            <td><textarea rows="1" style="display:none"></textarea></td>
+                            <td><textarea rows="1" style="display:none"></textarea></td>
                             <td><div class="date-cell"><input type="date" class="follow-up-date"><button class="same-above-btn" onclick="copyDateAbove(this)">Same as above</button></div></td>
                         </tr>
-                        <tr>
+                        <tr data-cat="ops" data-category="ops">
                             <td></td>
                             <td class="task-cell">Interior Cleanliness</td>
-                            <td><div class="checkbox-group"><input type="radio" name="response_ff_4" value="yes" class="checkbox-yes"></div></td>
-                            <td><div class="checkbox-group"><input type="radio" name="response_ff_4" value="no" class="checkbox-no"></div></td>
-                            <td><div class="checkbox-group"><input type="radio" name="response_ff_4" value="pending" class="checkbox-pending"></div></td>
-                            <td><textarea rows="1"></textarea></td>
-                            <td><textarea rows="1"></textarea></td>
+                            <td><select class="status-select" onchange="styleStatus(this)"><option value="">—</option><option value="yes">Yes</option><option value="no">No</option><option value="pending">Pending</option></select></td>
+                            <td><textarea rows="1" style="display:none"></textarea></td>
+                            <td><textarea rows="1" style="display:none"></textarea></td>
                             <td><div class="date-cell"><input type="date" class="follow-up-date"><button class="same-above-btn" onclick="copyDateAbove(this)">Same as above</button></div></td>
                         </tr>
-                        <tr>
+                        <tr data-cat="ops" data-category="ops">
                             <td></td>
                             <td class="task-cell">Preventative Maintenance Checklists Completed</td>
-                            <td><div class="checkbox-group"><input type="radio" name="response_ff_5" value="yes" class="checkbox-yes"></div></td>
-                            <td><div class="checkbox-group"><input type="radio" name="response_ff_5" value="no" class="checkbox-no"></div></td>
-                            <td><div class="checkbox-group"><input type="radio" name="response_ff_5" value="pending" class="checkbox-pending"></div></td>
-                            <td><textarea rows="1"></textarea></td>
-                            <td><textarea rows="1"></textarea></td>
+                            <td><select class="status-select" onchange="styleStatus(this)"><option value="">—</option><option value="yes">Yes</option><option value="no">No</option><option value="pending">Pending</option></select></td>
+                            <td><textarea rows="1" style="display:none"></textarea></td>
+                            <td><textarea rows="1" style="display:none"></textarea></td>
                             <td><div class="date-cell"><input type="date" class="follow-up-date"><button class="same-above-btn" onclick="copyDateAbove(this)">Same as above</button></div></td>
                         </tr>
-                        <tr>
+                        <tr data-cat="ops" data-category="ops">
                             <td></td>
-                            <td class="task-cell">POP & Menu Boards Accurate and Current</td>
-                            <td><div class="checkbox-group"><input type="radio" name="response_ff_6" value="yes" class="checkbox-yes"></div></td>
-                            <td><div class="checkbox-group"><input type="radio" name="response_ff_6" value="no" class="checkbox-no"></div></td>
-                            <td><div class="checkbox-group"><input type="radio" name="response_ff_6" value="pending" class="checkbox-pending"></div></td>
-                            <td><textarea rows="1"></textarea></td>
-                            <td><textarea rows="1"></textarea></td>
+                            <td class="task-cell">POP &amp; Menu Boards Accurate and Current</td>
+                            <td><select class="status-select" onchange="styleStatus(this)"><option value="">—</option><option value="yes">Yes</option><option value="no">No</option><option value="pending">Pending</option></select></td>
+                            <td><textarea rows="1" style="display:none"></textarea></td>
+                            <td><textarea rows="1" style="display:none"></textarea></td>
                             <td><div class="date-cell"><input type="date" class="follow-up-date"><button class="same-above-btn" onclick="copyDateAbove(this)">Same as above</button></div></td>
                         </tr>
-                        <tr>
+                        <tr data-cat="ops" data-category="ops">
                             <td></td>
                             <td class="task-cell">Uniform Policy Compliance</td>
-                            <td><div class="checkbox-group"><input type="radio" name="response_ff_7" value="yes" class="checkbox-yes"></div></td>
-                            <td><div class="checkbox-group"><input type="radio" name="response_ff_7" value="no" class="checkbox-no"></div></td>
-                            <td><div class="checkbox-group"><input type="radio" name="response_ff_7" value="pending" class="checkbox-pending"></div></td>
-                            <td><textarea rows="1"></textarea></td>
-                            <td><textarea rows="1"></textarea></td>
+                            <td><select class="status-select" onchange="styleStatus(this)"><option value="">—</option><option value="yes">Yes</option><option value="no">No</option><option value="pending">Pending</option></select></td>
+                            <td><textarea rows="1" style="display:none"></textarea></td>
+                            <td><textarea rows="1" style="display:none"></textarea></td>
                             <td><div class="date-cell"><input type="date" class="follow-up-date"><button class="same-above-btn" onclick="copyDateAbove(this)">Same as above</button></div></td>
                         </tr>
-                        <tr>
+                        <tr data-cat="ops" data-category="ops">
                             <td></td>
-                            <td class="task-cell">Store Organization (BOH & FOH)</td>
-                            <td><div class="checkbox-group"><input type="radio" name="response_ff_8" value="yes" class="checkbox-yes"></div></td>
-                            <td><div class="checkbox-group"><input type="radio" name="response_ff_8" value="no" class="checkbox-no"></div></td>
-                            <td><div class="checkbox-group"><input type="radio" name="response_ff_8" value="pending" class="checkbox-pending"></div></td>
-                            <td><textarea rows="1"></textarea></td>
-                            <td><textarea rows="1"></textarea></td>
+                            <td class="task-cell">Store Organization (BOH &amp; FOH)</td>
+                            <td><select class="status-select" onchange="styleStatus(this)"><option value="">—</option><option value="yes">Yes</option><option value="no">No</option><option value="pending">Pending</option></select></td>
+                            <td><textarea rows="1" style="display:none"></textarea></td>
+                            <td><textarea rows="1" style="display:none"></textarea></td>
                             <td><div class="date-cell"><input type="date" class="follow-up-date"><button class="same-above-btn" onclick="copyDateAbove(this)">Same as above</button></div></td>
                         </tr>
-                        <tr class="category-row">
+                        <!-- Guest Experience -->
+                        <tr class="category-row" data-cat="cx" data-category="cx">
                             <td>Guest Experience</td>
                             <td class="task-cell">Customer Service Observation (YOU RULE! / Crowns Offered)</td>
-                            <td><div class="checkbox-group"><input type="radio" name="response_ff_9" value="yes" class="checkbox-yes"></div></td>
-                            <td><div class="checkbox-group"><input type="radio" name="response_ff_9" value="no" class="checkbox-no"></div></td>
-                            <td><div class="checkbox-group"><input type="radio" name="response_ff_9" value="pending" class="checkbox-pending"></div></td>
-                            <td><textarea rows="1"></textarea></td>
-                            <td><textarea rows="1"></textarea></td>
+                            <td><select class="status-select" onchange="styleStatus(this)"><option value="">—</option><option value="yes">Yes</option><option value="no">No</option><option value="pending">Pending</option></select></td>
+                            <td><textarea rows="1" style="display:none"></textarea></td>
+                            <td><textarea rows="1" style="display:none"></textarea></td>
                             <td><div class="date-cell"><input type="date" class="follow-up-date"><button class="same-above-btn" onclick="copyDateAbove(this)">Same as above</button></div></td>
                         </tr>
-                        <tr>
+                        <tr data-cat="cx" data-category="cx">
                             <td></td>
                             <td class="task-cell">OSAT – Top 3 Opportunities Reviewed</td>
-                            <td><div class="checkbox-group"><input type="radio" name="response_ff_10" value="yes" class="checkbox-yes"></div></td>
-                            <td><div class="checkbox-group"><input type="radio" name="response_ff_10" value="no" class="checkbox-no"></div></td>
-                            <td><div class="checkbox-group"><input type="radio" name="response_ff_10" value="pending" class="checkbox-pending"></div></td>
-                            <td><textarea rows="1"></textarea></td>
-                            <td><textarea rows="1"></textarea></td>
+                            <td><select class="status-select" onchange="styleStatus(this)"><option value="">—</option><option value="yes">Yes</option><option value="no">No</option><option value="pending">Pending</option></select></td>
+                            <td><textarea rows="1" style="display:none"></textarea></td>
+                            <td><textarea rows="1" style="display:none"></textarea></td>
                             <td><div class="date-cell"><input type="date" class="follow-up-date"><button class="same-above-btn" onclick="copyDateAbove(this)">Same as above</button></div></td>
                         </tr>
-                                                <tr>
+                        <tr data-cat="cx" data-category="cx">
                             <td></td>
                             <td class="task-cell">Table Touches Observed</td>
-                            <td><div class="checkbox-group"><input type="radio" name="response_cs_11" value="yes" class="checkbox-yes"></div></td>
-                            <td><div class="checkbox-group"><input type="radio" name="response_cs_11" value="no" class="checkbox-no"></div></td>
-                            <td><div class="checkbox-group"><input type="radio" name="response_cs_11" value="pending" class="checkbox-pending"></div></td>
-                            <td><textarea rows="1"></textarea></td>
-                            <td><textarea rows="1"></textarea></td>
+                            <td><select class="status-select" onchange="styleStatus(this)"><option value="">—</option><option value="yes">Yes</option><option value="no">No</option><option value="pending">Pending</option></select></td>
+                            <td><textarea rows="1" style="display:none"></textarea></td>
+                            <td><textarea rows="1" style="display:none"></textarea></td>
                             <td><div class="date-cell"><input type="date" class="follow-up-date"><button class="same-above-btn" onclick="copyDateAbove(this)">Same as above</button></div></td>
                         </tr>
-                        <tr>
+                        <tr data-cat="cx" data-category="cx">
                             <td></td>
                             <td class="task-cell">Shift Huddle Meetings Observed</td>
-                            <td><div class="checkbox-group"><input type="radio" name="response_cs_11" value="yes" class="checkbox-yes"></div></td>
-                            <td><div class="checkbox-group"><input type="radio" name="response_cs_11" value="no" class="checkbox-no"></div></td>
-                            <td><div class="checkbox-group"><input type="radio" name="response_cs_11" value="pending" class="checkbox-pending"></div></td>
-                            <td><textarea rows="1"></textarea></td>
-                            <td><textarea rows="1"></textarea></td>
+                            <td><select class="status-select" onchange="styleStatus(this)"><option value="">—</option><option value="yes">Yes</option><option value="no">No</option><option value="pending">Pending</option></select></td>
+                            <td><textarea rows="1" style="display:none"></textarea></td>
+                            <td><textarea rows="1" style="display:none"></textarea></td>
                             <td><div class="date-cell"><input type="date" class="follow-up-date"><button class="same-above-btn" onclick="copyDateAbove(this)">Same as above</button></div></td>
                         </tr>
-                        <tr class="category-row">
-                            <td>Cash & Controls</td>
+                        <!-- Cash & Controls -->
+                        <tr class="category-row" data-cat="cash" data-category="cash">
+                            <td>Cash &amp; Controls</td>
                             <td class="task-cell">Petty Cash Count Matches</td>
-                            <td><div class="checkbox-group"><input type="radio" name="response_ff_11" value="yes" class="checkbox-yes"></div></td>
-                            <td><div class="checkbox-group"><input type="radio" name="response_ff_11" value="no" class="checkbox-no"></div></td>
-                            <td><div class="checkbox-group"><input type="radio" name="response_ff_11" value="pending" class="checkbox-pending"></div></td>
-                            <td><textarea rows="1"></textarea></td>
-                            <td><textarea rows="1"></textarea></td>
+                            <td><select class="status-select" onchange="styleStatus(this)"><option value="">—</option><option value="yes">Yes</option><option value="no">No</option><option value="pending">Pending</option></select></td>
+                            <td><textarea rows="1" style="display:none"></textarea></td>
+                            <td><textarea rows="1" style="display:none"></textarea></td>
                             <td><div class="date-cell"><input type="date" class="follow-up-date"><button class="same-above-btn" onclick="copyDateAbove(this)">Same as above</button></div></td>
                         </tr>
-                        <tr>
+                        <tr data-cat="cash" data-category="cash">
                             <td></td>
                             <td class="task-cell">Safe Drops Observed and Matching Totals</td>
-                            <td><div class="checkbox-group"><input type="radio" name="response_ff_12" value="yes" class="checkbox-yes"></div></td>
-                            <td><div class="checkbox-group"><input type="radio" name="response_ff_12" value="no" class="checkbox-no"></div></td>
-                            <td><div class="checkbox-group"><input type="radio" name="response_ff_12" value="pending" class="checkbox-pending"></div></td>
-                            <td><textarea rows="1"></textarea></td>
-                            <td><textarea rows="1"></textarea></td>
+                            <td><select class="status-select" onchange="styleStatus(this)"><option value="">—</option><option value="yes">Yes</option><option value="no">No</option><option value="pending">Pending</option></select></td>
+                            <td><textarea rows="1" style="display:none"></textarea></td>
+                            <td><textarea rows="1" style="display:none"></textarea></td>
                             <td><div class="date-cell"><input type="date" class="follow-up-date"><button class="same-above-btn" onclick="copyDateAbove(this)">Same as above</button></div></td>
                         </tr>
-                        <tr>
+                        <tr data-cat="cash" data-category="cash">
                             <td></td>
                             <td class="task-cell">Cash Over / Short Reviewed</td>
-                            <td><div class="checkbox-group"><input type="radio" name="response_ff_13" value="yes" class="checkbox-yes"></div></td>
-                            <td><div class="checkbox-group"><input type="radio" name="response_ff_13" value="no" class="checkbox-no"></div></td>
-                            <td><div class="checkbox-group"><input type="radio" name="response_ff_13" value="pending" class="checkbox-pending"></div></td>
-                            <td><textarea rows="1"></textarea></td>
-                            <td><textarea rows="1"></textarea></td>
+                            <td><select class="status-select" onchange="styleStatus(this)"><option value="">—</option><option value="yes">Yes</option><option value="no">No</option><option value="pending">Pending</option></select></td>
+                            <td><textarea rows="1" style="display:none"></textarea></td>
+                            <td><textarea rows="1" style="display:none"></textarea></td>
                             <td><div class="date-cell"><input type="date" class="follow-up-date"><button class="same-above-btn" onclick="copyDateAbove(this)">Same as above</button></div></td>
                         </tr>
-                        <tr>
+                        <tr data-cat="cash" data-category="cash">
                             <td></td>
                             <td class="task-cell">Refunds / Deletes / Voids / Manager Meals Reviewed</td>
-                            <td><div class="checkbox-group"><input type="radio" name="response_ff_14" value="yes" class="checkbox-yes"></div></td>
-                            <td><div class="checkbox-group"><input type="radio" name="response_ff_14" value="no" class="checkbox-no"></div></td>
-                            <td><div class="checkbox-group"><input type="radio" name="response_ff_14" value="pending" class="checkbox-pending"></div></td>
-                            <td><textarea rows="1"></textarea></td>
-                            <td><textarea rows="1"></textarea></td>
+                            <td><select class="status-select" onchange="styleStatus(this)"><option value="">—</option><option value="yes">Yes</option><option value="no">No</option><option value="pending">Pending</option></select></td>
+                            <td><textarea rows="1" style="display:none"></textarea></td>
+                            <td><textarea rows="1" style="display:none"></textarea></td>
                             <td><div class="date-cell"><input type="date" class="follow-up-date"><button class="same-above-btn" onclick="copyDateAbove(this)">Same as above</button></div></td>
                         </tr>
-                        <tr>
+                        <tr data-cat="cash" data-category="cash">
                             <td></td>
-                            <td class="task-cell">All Cash Paid-Outs Match Invoices & Daily Paperwork</td>
-                            <td><div class="checkbox-group"><input type="radio" name="response_ff_15" value="yes" class="checkbox-yes"></div></td>
-                            <td><div class="checkbox-group"><input type="radio" name="response_ff_15" value="no" class="checkbox-no"></div></td>
-                            <td><div class="checkbox-group"><input type="radio" name="response_ff_15" value="pending" class="checkbox-pending"></div></td>
-                            <td><textarea rows="1"></textarea></td>
-                            <td><textarea rows="1"></textarea></td>
+                            <td class="task-cell">All Cash Paid-Outs Match Invoices &amp; Daily Paperwork</td>
+                            <td><select class="status-select" onchange="styleStatus(this)"><option value="">—</option><option value="yes">Yes</option><option value="no">No</option><option value="pending">Pending</option></select></td>
+                            <td><textarea rows="1" style="display:none"></textarea></td>
+                            <td><textarea rows="1" style="display:none"></textarea></td>
                             <td><div class="date-cell"><input type="date" class="follow-up-date"><button class="same-above-btn" onclick="copyDateAbove(this)">Same as above</button></div></td>
                         </tr>
-                        <tr class="category-row">
+                        <!-- Financial Performance -->
+                        <tr class="category-row" data-cat="finance" data-category="finance">
                             <td>Financial Performance</td>
                             <td class="task-cell">Sales vs. Plan</td>
-                            <td><div class="checkbox-group"><input type="radio" name="response_ff_16" value="yes" class="checkbox-yes"></div></td>
-                            <td><div class="checkbox-group"><input type="radio" name="response_ff_16" value="no" class="checkbox-no"></div></td>
-                            <td><div class="checkbox-group"><input type="radio" name="response_ff_16" value="pending" class="checkbox-pending"></div></td>
-                            <td><textarea rows="1"></textarea></td>
-                            <td><textarea rows="1"></textarea></td>
+                            <td><select class="status-select" onchange="styleStatus(this)"><option value="">—</option><option value="yes">Yes</option><option value="no">No</option><option value="pending">Pending</option></select></td>
+                            <td><textarea rows="1" style="display:none"></textarea></td>
+                            <td><textarea rows="1" style="display:none"></textarea></td>
                             <td><div class="date-cell"><input type="date" class="follow-up-date"><button class="same-above-btn" onclick="copyDateAbove(this)">Same as above</button></div></td>
                         </tr>
-                        <tr>
+                        <tr data-cat="finance" data-category="finance">
                             <td></td>
                             <td class="task-cell">Labor vs. Plan</td>
-                            <td><div class="checkbox-group"><input type="radio" name="response_ff_17" value="yes" class="checkbox-yes"></div></td>
-                            <td><div class="checkbox-group"><input type="radio" name="response_ff_17" value="no" class="checkbox-no"></div></td>
-                            <td><div class="checkbox-group"><input type="radio" name="response_ff_17" value="pending" class="checkbox-pending"></div></td>
-                            <td><textarea rows="1"></textarea></td>
-                            <td><textarea rows="1"></textarea></td>
+                            <td><select class="status-select" onchange="styleStatus(this)"><option value="">—</option><option value="yes">Yes</option><option value="no">No</option><option value="pending">Pending</option></select></td>
+                            <td><textarea rows="1" style="display:none"></textarea></td>
+                            <td><textarea rows="1" style="display:none"></textarea></td>
                             <td><div class="date-cell"><input type="date" class="follow-up-date"><button class="same-above-btn" onclick="copyDateAbove(this)">Same as above</button></div></td>
                         </tr>
-                        <tr>
+                        <tr data-cat="finance" data-category="finance">
                             <td></td>
                             <td class="task-cell">Weekly COGS vs. Ideal</td>
-                            <td><div class="checkbox-group"><input type="radio" name="response_ff_18" value="yes" class="checkbox-yes"></div></td>
-                            <td><div class="checkbox-group"><input type="radio" name="response_ff_18" value="no" class="checkbox-no"></div></td>
-                            <td><div class="checkbox-group"><input type="radio" name="response_ff_18" value="pending" class="checkbox-pending"></div></td>
-                            <td><textarea rows="1"></textarea></td>
-                            <td><textarea rows="1"></textarea></td>
+                            <td><select class="status-select" onchange="styleStatus(this)"><option value="">—</option><option value="yes">Yes</option><option value="no">No</option><option value="pending">Pending</option></select></td>
+                            <td><textarea rows="1" style="display:none"></textarea></td>
+                            <td><textarea rows="1" style="display:none"></textarea></td>
                             <td><div class="date-cell"><input type="date" class="follow-up-date"><button class="same-above-btn" onclick="copyDateAbove(this)">Same as above</button></div></td>
                         </tr>
-                        <tr class="category-row">
-                            <td>Food Safety & Compliance</td>
+                        <!-- Food Safety & Compliance -->
+                        <tr class="category-row" data-cat="food" data-category="food">
+                            <td>Food Safety &amp; Compliance</td>
                             <td class="task-cell">Food Safety Criticals Reviewed</td>
-                            <td><div class="checkbox-group"><input type="radio" name="response_ff_19" value="yes" class="checkbox-yes"></div></td>
-                            <td><div class="checkbox-group"><input type="radio" name="response_ff_19" value="no" class="checkbox-no"></div></td>
-                            <td><div class="checkbox-group"><input type="radio" name="response_ff_19" value="pending" class="checkbox-pending"></div></td>
-                            <td><textarea rows="1"></textarea></td>
-                            <td><textarea rows="1"></textarea></td>
+                            <td><select class="status-select" onchange="styleStatus(this)"><option value="">—</option><option value="yes">Yes</option><option value="no">No</option><option value="pending">Pending</option></select></td>
+                            <td><textarea rows="1" style="display:none"></textarea></td>
+                            <td><textarea rows="1" style="display:none"></textarea></td>
                             <td><div class="date-cell"><input type="date" class="follow-up-date"><button class="same-above-btn" onclick="copyDateAbove(this)">Same as above</button></div></td>
                         </tr>
-                        <tr>
+                        <tr data-cat="food" data-category="food">
                             <td></td>
                             <td class="task-cell">SOS Compliance (No Parking Cars)</td>
-                            <td><div class="checkbox-group"><input type="radio" name="response_ff_20" value="yes" class="checkbox-yes"></div></td>
-                            <td><div class="checkbox-group"><input type="radio" name="response_ff_20" value="no" class="checkbox-no"></div></td>
-                            <td><div class="checkbox-group"><input type="radio" name="response_ff_20" value="pending" class="checkbox-pending"></div></td>
-                            <td><textarea rows="1"></textarea></td>
-                            <td><textarea rows="1"></textarea></td>
+                            <td><select class="status-select" onchange="styleStatus(this)"><option value="">—</option><option value="yes">Yes</option><option value="no">No</option><option value="pending">Pending</option></select></td>
+                            <td><textarea rows="1" style="display:none"></textarea></td>
+                            <td><textarea rows="1" style="display:none"></textarea></td>
                             <td><div class="date-cell"><input type="date" class="follow-up-date"><button class="same-above-btn" onclick="copyDateAbove(this)">Same as above</button></div></td>
                         </tr>
-                        <tr>
+                        <tr data-cat="food" data-category="food">
                             <td></td>
                             <td class="task-cell">BK Log Completion</td>
-                            <td><div class="checkbox-group"><input type="radio" name="response_ff_21" value="yes" class="checkbox-yes"></div></td>
-                            <td><div class="checkbox-group"><input type="radio" name="response_ff_21" value="no" class="checkbox-no"></div></td>
-                            <td><div class="checkbox-group"><input type="radio" name="response_ff_21" value="pending" class="checkbox-pending"></div></td>
-                            <td><textarea rows="1"></textarea></td>
-                            <td><textarea rows="1"></textarea></td>
+                            <td><select class="status-select" onchange="styleStatus(this)"><option value="">—</option><option value="yes">Yes</option><option value="no">No</option><option value="pending">Pending</option></select></td>
+                            <td><textarea rows="1" style="display:none"></textarea></td>
+                            <td><textarea rows="1" style="display:none"></textarea></td>
                             <td><div class="date-cell"><input type="date" class="follow-up-date"><button class="same-above-btn" onclick="copyDateAbove(this)">Same as above</button></div></td>
                         </tr>
-                        <tr>
+                        <tr data-cat="food" data-category="food">
                             <td></td>
                             <td class="task-cell">CHEF Audit Grades Reviewed</td>
-                            <td><div class="checkbox-group"><input type="radio" name="response_ff_22" value="yes" class="checkbox-yes"></div></td>
-                            <td><div class="checkbox-group"><input type="radio" name="response_ff_22" value="no" class="checkbox-no"></div></td>
-                            <td><div class="checkbox-group"><input type="radio" name="response_ff_22" value="pending" class="checkbox-pending"></div></td>
-                            <td><textarea rows="1"></textarea></td>
-                            <td><textarea rows="1"></textarea></td>
+                            <td><select class="status-select" onchange="styleStatus(this)"><option value="">—</option><option value="yes">Yes</option><option value="no">No</option><option value="pending">Pending</option></select></td>
+                            <td><textarea rows="1" style="display:none"></textarea></td>
+                            <td><textarea rows="1" style="display:none"></textarea></td>
                             <td><div class="date-cell"><input type="date" class="follow-up-date"><button class="same-above-btn" onclick="copyDateAbove(this)">Same as above</button></div></td>
                         </tr>
-                        <tr class="category-row">
-                            <td>Systems & Execution</td>
+                        <!-- Systems & Execution -->
+                        <tr class="category-row" data-cat="systems" data-category="systems">
+                            <td>Systems &amp; Execution</td>
                             <td class="task-cell">King Board Updated</td>
-                            <td><div class="checkbox-group"><input type="radio" name="response_ff_23" value="yes" class="checkbox-yes"></div></td>
-                            <td><div class="checkbox-group"><input type="radio" name="response_ff_23" value="no" class="checkbox-no"></div></td>
-                            <td><div class="checkbox-group"><input type="radio" name="response_ff_23" value="pending" class="checkbox-pending"></div></td>
-                            <td><textarea rows="1"></textarea></td>
-                            <td><textarea rows="1"></textarea></td>
+                            <td><select class="status-select" onchange="styleStatus(this)"><option value="">—</option><option value="yes">Yes</option><option value="no">No</option><option value="pending">Pending</option></select></td>
+                            <td><textarea rows="1" style="display:none"></textarea></td>
+                            <td><textarea rows="1" style="display:none"></textarea></td>
                             <td><div class="date-cell"><input type="date" class="follow-up-date"><button class="same-above-btn" onclick="copyDateAbove(this)">Same as above</button></div></td>
                         </tr>
-                        <tr>
+                        <tr data-cat="systems" data-category="systems">
                             <td></td>
                             <td class="task-cell">Command Center Accuracy</td>
-                            <td><div class="checkbox-group"><input type="radio" name="response_ff_24" value="yes" class="checkbox-yes"></div></td>
-                            <td><div class="checkbox-group"><input type="radio" name="response_ff_24" value="no" class="checkbox-no"></div></td>
-                            <td><div class="checkbox-group"><input type="radio" name="response_ff_24" value="pending" class="checkbox-pending"></div></td>
-                            <td><textarea rows="1"></textarea></td>
-                            <td><textarea rows="1"></textarea></td>
+                            <td><select class="status-select" onchange="styleStatus(this)"><option value="">—</option><option value="yes">Yes</option><option value="no">No</option><option value="pending">Pending</option></select></td>
+                            <td><textarea rows="1" style="display:none"></textarea></td>
+                            <td><textarea rows="1" style="display:none"></textarea></td>
                             <td><div class="date-cell"><input type="date" class="follow-up-date"><button class="same-above-btn" onclick="copyDateAbove(this)">Same as above</button></div></td>
                         </tr>
-                        <tr>
+                        <tr data-cat="systems" data-category="systems">
                             <td></td>
                             <td class="task-cell">All Equipment in Working Condition</td>
-                            <td><div class="checkbox-group"><input type="radio" name="response_ff_25" value="yes" class="checkbox-yes"></div></td>
-                            <td><div class="checkbox-group"><input type="radio" name="response_ff_25" value="no" class="checkbox-no"></div></td>
-                            <td><div class="checkbox-group"><input type="radio" name="response_ff_25" value="pending" class="checkbox-pending"></div></td>
-                            <td><textarea rows="1"></textarea></td>
-                            <td><textarea rows="1"></textarea></td>
+                            <td><select class="status-select" onchange="styleStatus(this)"><option value="">—</option><option value="yes">Yes</option><option value="no">No</option><option value="pending">Pending</option></select></td>
+                            <td><textarea rows="1" style="display:none"></textarea></td>
+                            <td><textarea rows="1" style="display:none"></textarea></td>
                             <td><div class="date-cell"><input type="date" class="follow-up-date"><button class="same-above-btn" onclick="copyDateAbove(this)">Same as above</button></div></td>
                         </tr>
-                        <tr class="category-row">
-                            <td>Facilities & Controls</td>
-                            <td class="task-cell">Restrooms Clean & Logs Complete</td>
-                            <td><div class="checkbox-group"><input type="radio" name="response_ff_26" value="yes" class="checkbox-yes"></div></td>
-                            <td><div class="checkbox-group"><input type="radio" name="response_ff_26" value="no" class="checkbox-no"></div></td>
-                            <td><div class="checkbox-group"><input type="radio" name="response_ff_26" value="pending" class="checkbox-pending"></div></td>
-                            <td><textarea rows="1"></textarea></td>
-                            <td><textarea rows="1"></textarea></td>
+                        <!-- Facilities & Controls -->
+                        <tr class="category-row" data-cat="cash" data-category="cash">
+                            <td>Facilities &amp; Controls</td>
+                            <td class="task-cell">Restrooms Clean &amp; Logs Complete</td>
+                            <td><select class="status-select" onchange="styleStatus(this)"><option value="">—</option><option value="yes">Yes</option><option value="no">No</option><option value="pending">Pending</option></select></td>
+                            <td><textarea rows="1" style="display:none"></textarea></td>
+                            <td><textarea rows="1" style="display:none"></textarea></td>
                             <td><div class="date-cell"><input type="date" class="follow-up-date"><button class="same-above-btn" onclick="copyDateAbove(this)">Same as above</button></div></td>
                         </tr>
-                        <tr>
+                        <tr data-cat="cash" data-category="cash">
                             <td></td>
-                            <td class="task-cell">Playground Clean & Logs Complete</td>
-                            <td><div class="checkbox-group"><input type="radio" name="response_ff_27" value="yes" class="checkbox-yes"></div></td>
-                            <td><div class="checkbox-group"><input type="radio" name="response_ff_27" value="no" class="checkbox-no"></div></td>
-                            <td><div class="checkbox-group"><input type="radio" name="response_ff_27" value="pending" class="checkbox-pending"></div></td>
-                            <td><textarea rows="1"></textarea></td>
-                            <td><textarea rows="1"></textarea></td>
+                            <td class="task-cell">Playground Clean &amp; Logs Complete</td>
+                            <td><select class="status-select" onchange="styleStatus(this)"><option value="">—</option><option value="yes">Yes</option><option value="no">No</option><option value="pending">Pending</option></select></td>
+                            <td><textarea rows="1" style="display:none"></textarea></td>
+                            <td><textarea rows="1" style="display:none"></textarea></td>
                             <td><div class="date-cell"><input type="date" class="follow-up-date"><button class="same-above-btn" onclick="copyDateAbove(this)">Same as above</button></div></td>
                         </tr>
-                        <tr>
+                        <tr data-cat="cash" data-category="cash">
                             <td></td>
                             <td class="task-cell">Petty Cash Count Matches</td>
-                            <td><div class="checkbox-group"><input type="radio" name="response_ff_28" value="yes" class="checkbox-yes"></div></td>
-                            <td><div class="checkbox-group"><input type="radio" name="response_ff_28" value="no" class="checkbox-no"></div></td>
-                            <td><div class="checkbox-group"><input type="radio" name="response_ff_28" value="pending" class="checkbox-pending"></div></td>
-                            <td><textarea rows="1"></textarea></td>
-                            <td><textarea rows="1"></textarea></td>
+                            <td><select class="status-select" onchange="styleStatus(this)"><option value="">—</option><option value="yes">Yes</option><option value="no">No</option><option value="pending">Pending</option></select></td>
+                            <td><textarea rows="1" style="display:none"></textarea></td>
+                            <td><textarea rows="1" style="display:none"></textarea></td>
                             <td><div class="date-cell"><input type="date" class="follow-up-date"><button class="same-above-btn" onclick="copyDateAbove(this)">Same as above</button></div></td>
                         </tr>
-                        <tr class="category-row">
+                        <!-- Leadership Follow-Up -->
+                        <tr class="category-row" data-cat="leadership" data-category="leadership">
                             <td>Leadership Follow-Up</td>
                             <td class="task-cell">ACR Complaints Reviewed with GM</td>
-                            <td><div class="checkbox-group"><input type="radio" name="response_ff_29" value="yes" class="checkbox-yes"></div></td>
-                            <td><div class="checkbox-group"><input type="radio" name="response_ff_29" value="no" class="checkbox-no"></div></td>
-                            <td><div class="checkbox-group"><input type="radio" name="response_ff_29" value="pending" class="checkbox-pending"></div></td>
-                            <td><textarea rows="1"></textarea></td>
-                            <td><textarea rows="1"></textarea></td>
+                            <td><select class="status-select" onchange="styleStatus(this)"><option value="">—</option><option value="yes">Yes</option><option value="no">No</option><option value="pending">Pending</option></select></td>
+                            <td><textarea rows="1" style="display:none"></textarea></td>
+                            <td><textarea rows="1" style="display:none"></textarea></td>
                             <td><div class="date-cell"><input type="date" class="follow-up-date"><button class="same-above-btn" onclick="copyDateAbove(this)">Same as above</button></div></td>
                         </tr>
                     </tbody>
                 </table>
+                </div>
             </div>
         </div>
 
-        <div class="save-buttons">
-            <button class="save-btn" id="savePdfBtnBottom">📄 Save as PDF (Send to Ops Team + Store Manager)</button>
+        <div class="save-buttons" style="margin-top:14px">
+            <button class="save-btn" id="savePdfBtnBottom">📄 Save PDF</button>
             <button class="save-btn" id="clearFormBtnBottom">🧹 Clear Form</button>
         </div>
     </div>
 
+    <!-- Comment/Action Modal -->
     <div class="modal-overlay" id="commentModal" role="dialog" aria-modal="true">
         <div class="modal-card">
-            <h3 id="modalTitle">Edit notes</h3>
+            <h3 id="modalTitle">Edit Notes</h3>
+            <div class="modal-date-row" id="modalDateRow" style="display:none">
+                <label for="modalDateInput">Follow-up Date:</label>
+                <input type="date" id="modalDateInput">
+            </div>
             <textarea id="modalTextarea" placeholder="Type here..."></textarea>
             <div class="modal-actions">
                 <button class="save-btn" id="modalCancelBtn">Cancel</button>
@@ -1219,143 +947,112 @@
     </div>
 
     <script>
-        // Theme Toggle
-        const themeToggle = document.getElementById('themeToggle');
-        const body = document.body;
-        let isDarkMode = false;
-
-        themeToggle.addEventListener('click', () => {
-            isDarkMode = !isDarkMode;
-            if (isDarkMode) {
-                body.setAttribute('data-theme', 'dark');
-                themeToggle.textContent = '☀️';
-            } else {
-                body.removeAttribute('data-theme');
-                themeToggle.textContent = '🌙';
-            }
+        // ==================== THEME ====================
+        document.getElementById('themeToggle').addEventListener('click', function() {
+            const dark = document.body.getAttribute('data-theme') === 'dark';
+            document.body.setAttribute('data-theme', dark ? '' : 'dark');
+            this.textContent = dark ? '🌙' : '☀️';
         });
 
-        // Automatic device detection for layout
-        const container = document.querySelector('.container');
-        const headerInputs = document.getElementById('headerInputs');
-
+        // ==================== DEVICE DETECTION ====================
         function applyResponsiveLayout() {
-            const isMobile = window.matchMedia('(max-width: 768px)').matches;
-            container.classList.toggle('mobile-layout', isMobile);
-            headerInputs.classList.toggle('mobile', isMobile);
+            const w = window.innerWidth;
+            document.body.dataset.deviceType = w <= 480 ? 'mobile-portrait' : w <= 768 ? 'mobile' : 'desktop';
         }
-
         window.addEventListener('resize', applyResponsiveLayout);
         applyResponsiveLayout();
 
-        // Sheet Tabs
-        const tabButtons = document.querySelectorAll('.tab-btn');
-        const sheets = document.querySelectorAll('.checklist-sheet');
-        const sheetTitle = document.getElementById('sheetTitle');
-
-        tabButtons.forEach(btn => {
+        // ==================== TABS ====================
+        document.querySelectorAll('.tab-btn').forEach(btn => {
             btn.addEventListener('click', () => {
-                const sheetType = btn.getAttribute('data-sheet');
-                
-                tabButtons.forEach(b => b.classList.remove('active'));
+                document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
                 btn.classList.add('active');
-                
-                sheets.forEach(s => s.classList.remove('active'));
-                document.getElementById(`${sheetType}-sheet`).classList.add('active');
-                
-                if (sheetType === 'cs') {
-                    sheetTitle.textContent = 'DPM CS Store Visit Checklist';
-                } else {
-                    sheetTitle.textContent = 'DPM FF Store Visit Checklist';
-                }
+                const sheet = btn.getAttribute('data-sheet');
+                document.querySelectorAll('.checklist-sheet').forEach(s => s.classList.remove('active'));
+                document.getElementById(sheet + '-sheet').classList.add('active');
+                document.getElementById('sheetTitle').textContent =
+                    sheet === 'cs' ? 'DPM CS Store Visit Checklist' : 'DPM FF Store Visit Checklist';
             });
         });
 
-        // Copy Date Above Function
-        function copyDateAbove(button) {
-            const currentCell = button.closest('td');
-            const currentRow = currentCell.closest('tr');
-            const prevRow = currentRow.previousElementSibling;
-            
-            if (prevRow) {
-                const prevDateCell = prevRow.querySelector('.date-cell');
-                if (prevDateCell) {
-                    const prevDateInput = prevDateCell.querySelector('input[type="date"]');
-                    const currentDateInput = currentCell.querySelector('input[type="date"]');
-                    
-                    if (prevDateInput && currentDateInput) {
-                        currentDateInput.value = prevDateInput.value;
-                    }
-                }
-            }
+        // ==================== STATUS DROPDOWN ====================
+        function styleStatus(sel) {
+            sel.classList.remove('status-yes', 'status-no', 'status-pending');
+            if (sel.value === 'yes')     sel.classList.add('status-yes');
+            if (sel.value === 'no')      sel.classList.add('status-no');
+            if (sel.value === 'pending') sel.classList.add('status-pending');
         }
 
-        function savePdf() { window.print(); }
-        document.getElementById('savePdfBtnTop').addEventListener('click', savePdf);
-        document.getElementById('savePdfBtnBottom').addEventListener('click', savePdf);
-
-        function clearForm() {
-            if (!confirm('Clear all form entries?')) return;
-            document.querySelectorAll('input[type="radio"]').forEach(r => r.checked = false);
-            document.querySelectorAll('input[type="date"], input[type="text"]').forEach(el => el.value = '');
-            document.querySelectorAll('.comment-btn').forEach(btn => {
-                btn.dataset.value = '';
-                btn.classList.remove('has-content');
-                btn.textContent = 'Tap to add details';
-                btn.nextElementSibling.textContent = '';
-            });
-            document.getElementById('dateInput').valueAsDate = new Date();
+        // ==================== COPY DATE ABOVE ====================
+        function copyDateAbove(btn) {
+            const row = btn.closest('tr');
+            const prev = row.previousElementSibling;
+            if (!prev) return;
+            const prevDate = prev.querySelector('input.follow-up-date');
+            const curDate  = btn.closest('.date-cell').querySelector('input.follow-up-date');
+            if (prevDate && curDate) curDate.value = prevDate.value;
         }
 
-        document.getElementById('clearFormBtnTop').addEventListener('click', clearForm);
-        document.getElementById('clearFormBtnBottom').addEventListener('click', clearForm);
+        // ==================== COMMENT BUTTONS ====================
+        const commentModal   = document.getElementById('commentModal');
+        const modalTitle     = document.getElementById('modalTitle');
+        const modalTextarea  = document.getElementById('modalTextarea');
+        const modalDateRow   = document.getElementById('modalDateRow');
+        const modalDateInput = document.getElementById('modalDateInput');
+        let activeBtn = null;
+        let isActionItems = false;
 
-        function applyCategoryAlternating() {
-            document.querySelectorAll('tbody').forEach(tbody => {
-                let idx = 0;
-                tbody.querySelectorAll('tr.category-row').forEach(row => {
-                    row.classList.remove('category-alt-1', 'category-alt-2');
-                    row.classList.add(idx % 2 === 0 ? 'category-alt-1' : 'category-alt-2');
-                    idx += 1;
-                });
-            });
+        function todayISO() {
+            return new Date().toISOString().split('T')[0];
         }
 
-        const commentModal = document.getElementById('commentModal');
-        const modalTitle = document.getElementById('modalTitle');
-        const modalTextarea = document.getElementById('modalTextarea');
-        const modalCancelBtn = document.getElementById('modalCancelBtn');
-        const modalSaveBtn = document.getElementById('modalSaveBtn');
-        let activeCommentBtn = null;
-
-        function updateCommentButton(btn, value) {
+        function updateBtn(btn, value) {
             const text = value.trim();
             btn.dataset.value = value;
             btn.classList.toggle('has-content', Boolean(text));
-            btn.textContent = text ? (text.length > 45 ? `${text.slice(0, 45)}…` : text) : 'Tap to add details';
+            btn.textContent = text ? (text.length > 50 ? text.slice(0, 50) + '…' : text) : 'Tap to add details';
             if (btn.nextElementSibling) btn.nextElementSibling.textContent = value;
         }
 
         function initCommentButtons() {
             document.querySelectorAll('.checklist-sheet tbody tr').forEach(row => {
                 const cells = row.querySelectorAll('td');
-                [5, 6].forEach((i) => {
+                // col index 3 = AC Comments, col index 4 = Action Items
+                [3, 4].forEach(i => {
                     const cell = cells[i];
                     if (!cell) return;
                     const textarea = cell.querySelector('textarea');
                     if (!textarea) return;
-                    const label = i === 5 ? 'AC Comments' : 'Action Items';
+                    const isAction = (i === 4);
+                    const label = isAction ? 'Action Items' : 'AC Comments';
                     const btn = document.createElement('button');
                     btn.type = 'button';
                     btn.className = 'comment-btn';
                     btn.dataset.label = label;
+                    btn.dataset.isAction = isAction ? '1' : '0';
                     const printDiv = document.createElement('div');
                     printDiv.className = 'comment-print';
-                    updateCommentButton(btn, textarea.value || '');
+                    updateBtn(btn, textarea.value || '');
                     btn.addEventListener('click', () => {
-                        activeCommentBtn = btn;
-                        modalTitle.textContent = `Edit ${label}`;
+                        activeBtn = btn;
+                        isActionItems = isAction;
+                        modalTitle.textContent = 'Edit ' + label;
                         modalTextarea.value = btn.dataset.value || '';
+                        // Show date row only for Action Items, pre-fill today
+                        if (isAction) {
+                            modalDateRow.style.display = 'flex';
+                            // Pre-fill with the row's follow-up date or 2 weeks from today
+                            const rowDate = btn.closest('tr').querySelector('input.follow-up-date');
+                            if (rowDate && rowDate.value) {
+                                modalDateInput.value = rowDate.value;
+                            } else {
+                                const twoWeeks = new Date();
+                                twoWeeks.setDate(twoWeeks.getDate() + 14);
+                                modalDateInput.value = twoWeeks.toISOString().split('T')[0];
+                            }
+                        } else {
+                            modalDateRow.style.display = 'none';
+                        }
                         commentModal.classList.add('open');
                         modalTextarea.focus();
                     });
@@ -1366,74 +1063,99 @@
             });
         }
 
-        modalCancelBtn.addEventListener('click', () => commentModal.classList.remove('open'));
-        modalSaveBtn.addEventListener('click', () => {
-            if (activeCommentBtn) updateCommentButton(activeCommentBtn, modalTextarea.value);
+        document.getElementById('modalCancelBtn').addEventListener('click', () => commentModal.classList.remove('open'));
+        document.getElementById('modalSaveBtn').addEventListener('click', () => {
+            if (activeBtn) {
+                updateBtn(activeBtn, modalTextarea.value);
+                // If action items, also save date back to follow-up date cell
+                if (isActionItems) {
+                    const rowDate = activeBtn.closest('tr').querySelector('input.follow-up-date');
+                    if (rowDate && modalDateInput.value) rowDate.value = modalDateInput.value;
+                }
+            }
             commentModal.classList.remove('open');
         });
 
-        // Save as Excel (basic implementation - converts to CSV)
+        // ==================== SAVE PDF ====================
+        function syncPrintText() {
+            document.querySelectorAll('.comment-btn').forEach(btn => {
+                const pd = btn.nextElementSibling;
+                if (pd && pd.classList.contains('comment-print')) pd.textContent = btn.dataset.value || '';
+            });
+        }
+
+        function showSavePdfPrompt() {
+            const name = document.getElementById('nameInput').value.trim();
+            const manager = document.getElementById('managerOnDutyInput').value.trim();
+            if (!name) {
+                alert('⚠️ Please enter the Observer Name before saving.');
+                document.getElementById('nameInput').focus();
+                return;
+            }
+            if (!manager) {
+                alert('⚠️ Please enter the Manager on Duty before saving.');
+                document.getElementById('managerOnDutyInput').focus();
+                return;
+            }
+            const managerDisplay = manager || '[Observed Manager]';
+            const msg = `📋 Don't forget to send a copy to:\n\n  • Your District Operator (DO)\n  • ${managerDisplay} (the manager you just observed)\n\nPress OK to proceed with saving, or Cancel to go back.`;
+            if (confirm(msg)) {
+                syncPrintText();
+                window.print();
+            }
+        }
+
+        document.getElementById('savePdfBtnTop').addEventListener('click', showSavePdfPrompt);
+        document.getElementById('savePdfBtnBottom').addEventListener('click', showSavePdfPrompt);
+
+        // ==================== CLEAR FORM ====================
+        function clearForm() {
+            if (!confirm('Clear all form entries?')) return;
+            document.querySelectorAll('.status-select').forEach(s => { s.value = ''; styleStatus(s); });
+            document.querySelectorAll('input[type="date"], input[type="text"]').forEach(el => el.value = '');
+            document.querySelectorAll('.comment-btn').forEach(btn => updateBtn(btn, ''));
+            document.getElementById('dateInput').valueAsDate = new Date();
+        }
+
+        document.getElementById('clearFormBtnTop').addEventListener('click', clearForm);
+        document.getElementById('clearFormBtnBottom').addEventListener('click', clearForm);
+
+        // ==================== EXCEL EXPORT ====================
         document.getElementById('saveExcelBtn').addEventListener('click', () => {
-            const activeSheet = document.querySelector('.checklist-sheet.active');
-            const table = activeSheet.querySelector('table');
             const sheetType = document.querySelector('.tab-btn.active').getAttribute('data-sheet').toUpperCase();
-            
             let csv = [];
-            
-            // Add header info
             csv.push(`DPM ${sheetType} Store Visit Checklist`);
             csv.push(`Observer Name:,${document.getElementById('nameInput').value}`);
             csv.push(`Date:,${document.getElementById('dateInput').value}`);
             csv.push(`Site:,${document.getElementById('siteInput').value}`);
             csv.push(`Manager on Duty:,${document.getElementById('managerOnDutyInput').value}`);
             csv.push('');
-            
-            // Add table headers
-            const headers = [];
-            table.querySelectorAll('thead th').forEach(th => {
-                headers.push(th.textContent.trim());
-            });
-            csv.push(headers.join(','));
-            
-            // Add table data
-            table.querySelectorAll('tbody tr').forEach(row => {
-                const rowData = [];
-                const cells = row.querySelectorAll('td');
-                
-                // Category
-                rowData.push(cells[0].textContent.trim());
-                // Task
-                rowData.push(cells[1].textContent.trim());
-                
-                // Status
-                const statusSelect = cells[2].querySelector('.status-select');
-                rowData.push(statusSelect ? statusSelect.value : '');
+            csv.push('"Category","Tasks","Status","AC Comments","Action Items","Follow Up Date"');
 
-                // AC Comments
-                rowData.push(cells[5].querySelector('.comment-btn')?.dataset.value || '');
-                // Action Items
-                rowData.push(cells[6].querySelector('.comment-btn')?.dataset.value || '');
-                // Follow Up Date
-                const dateInput = cells[5]?.querySelector('input[type="date"]');
-                rowData.push(dateInput ? dateInput.value : '');
-                
-                csv.push(rowData.map(val => `"${val}"`).join(','));
+            document.querySelector('.checklist-sheet.active table tbody').querySelectorAll('tr').forEach(row => {
+                const cells = row.querySelectorAll('td');
+                if (!cells.length) return;
+                const cat    = cells[0].textContent.trim();
+                const task   = cells[1] ? cells[1].textContent.trim() : '';
+                const status = cells[2] ? (cells[2].querySelector('.status-select')?.value || '') : '';
+                const ac     = cells[3] ? (cells[3].querySelector('.comment-btn')?.dataset.value || '') : '';
+                const action = cells[4] ? (cells[4].querySelector('.comment-btn')?.dataset.value || '') : '';
+                const date   = cells[5] ? (cells[5].querySelector('input.follow-up-date')?.value || '') : '';
+                csv.push([cat, task, status, ac, action, date].map(v => `"${v.replace(/"/g,'""')}"`).join(','));
             });
-            
-            const csvContent = csv.join('\n');
-            const blob = new Blob([csvContent], { type: 'text/csv' });
-            const url = URL.createObjectURL(blob);
-            const a = document.createElement('a');
+
+            const blob = new Blob([csv.join('\n')], { type: 'text/csv' });
+            const url  = URL.createObjectURL(blob);
+            const a    = document.createElement('a');
             a.href = url;
-            a.download = `DPM_${sheetType}_Checklist_${new Date().toISOString().split('T')[0]}.csv`;
+            a.download = `DPM_${sheetType}_Checklist_${todayISO()}.csv`;
             a.click();
             URL.revokeObjectURL(url);
         });
 
-        // Set today's date as default
+        // ==================== INIT ====================
         document.getElementById('dateInput').valueAsDate = new Date();
         initCommentButtons();
-        applyCategoryAlternating();
     </script>
 </body>
 </html>
